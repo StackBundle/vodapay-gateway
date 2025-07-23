@@ -1,0 +1,4121 @@
+openapi: 3.0.1
+info:
+  contact:
+    name: Live Docs
+    url: https://docs.vodapaygateway.vodacom.co.za/
+  description: Enabling ecommerce merchants to accept online payments from customers.
+  title: VodaPay Gateway
+  version: v2.0
+servers:
+- url: /
+tags:
+- name: Callback
+- name: Wallet
+- name: Pay
+- name: Token
+- name: Pay/Process
+paths:
+  /v2/CallBack:
+    get:
+      operationId: CallBack_Get
+      parameters:
+      - description: The data.
+        in: query
+        name: data
+        schema:
+          nullable: true
+          type: string
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                format: binary
+                type: string
+          description: ""
+      summary: gets the specified data.
+      tags:
+      - Callback
+      x-eov-operation-handler: controllers/CallbackController
+  /v2/CallBack/NI:
+    post:
+      operationId: CallBack_NiWebhook
+      parameters:
+      - in: header
+        name: apiKey
+        schema:
+          nullable: true
+          type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/WebHookModel"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebHookModel"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/WebHookModel"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/WebHookModel"
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                format: binary
+                type: string
+          description: ""
+      summary: gets the specified data.
+      tags:
+      - Callback
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/CallbackController
+  /v2/CallBack/NIDeletedCards:
+    post:
+      operationId: CallBack_NiWebhookDelete
+      parameters:
+      - in: header
+        name: apiKey
+        schema:
+          nullable: true
+          type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/DeletedTokensWebHookPayload"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeletedTokensWebHookPayload"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/DeletedTokensWebHookPayload"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/DeletedTokensWebHookPayload"
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                format: binary
+                type: string
+          description: ""
+      summary: Delete saved card token(s) sent by NI
+      tags:
+      - Callback
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/CallbackController
+  /v2/CallBack/NI/redirect/{merchantId}:
+    get:
+      operationId: CallBack_NiRedirect
+      parameters:
+      - in: path
+        name: merchantId
+        required: true
+        schema:
+          nullable: false
+          type: string
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                format: binary
+                type: string
+          description: ""
+      summary: redirect data and translate to NI specific
+      tags:
+      - Callback
+      x-eov-operation-handler: controllers/CallbackController
+  /v2/CallBack/NITokenLifecycle:
+    post:
+      operationId: CallBack_NiTokenLifecycle
+      parameters:
+      - in: header
+        name: apiKey
+        schema:
+          nullable: true
+          type: string
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/TokenLifeCycleWebhook"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenLifeCycleWebhook"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/TokenLifeCycleWebhook"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/TokenLifeCycleWebhook"
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                format: binary
+                type: string
+          description: ""
+      summary: NI Token Lifecycle
+      tags:
+      - Callback
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/CallbackController
+  /v2/DigitalWallet/Block:
+    post:
+      operationId: DigitalWallet_Block
+      parameters:
+      - description: The API key.
+        in: header
+        name: api-key
+        schema:
+          format: guid
+          nullable: false
+          type: string
+          x-originalName: apiKey
+        x-originalName: apiKey
+      - description: "if set to true [is testing]."
+        in: header
+        name: test
+        schema:
+          default: false
+          nullable: false
+          type: boolean
+          x-originalName: isTesting
+        x-originalName: isTesting
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayDigitalWallet"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayDigitalWallet"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayDigitalWallet"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayDigitalWallet"
+        description: VodaPayGatewayDigitalWallet.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayDigitalWalletResponse"
+          description: Block a digital wallet
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayDigitalWalletResponse"
+          description: Error blocking a digital wallet
+      summary: Initializes a new instance of the DigitalWalletController class.
+      tags:
+      - Wallet
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/WalletController
+  /v2/DigitalWallet/Unblock:
+    post:
+      operationId: DigitalWallet_Unblock
+      parameters:
+      - description: The API key.
+        in: header
+        name: api-key
+        schema:
+          format: guid
+          nullable: false
+          type: string
+          x-originalName: apiKey
+        x-originalName: apiKey
+      - description: "if set to true [is testing]."
+        in: header
+        name: test
+        schema:
+          default: false
+          nullable: false
+          type: boolean
+          x-originalName: isTesting
+        x-originalName: isTesting
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayDigitalWallet"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayDigitalWallet"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayDigitalWallet"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayDigitalWallet"
+        description: VodaPayGatewayDigitalWallet.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentDigitalWalletResponseModel"
+          description: Unblock a digital wallet
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentDigitalWalletResponseModel"
+          description: Error unblocking a digital wallet
+      summary: Unblock wallet.
+      tags:
+      - Wallet
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/WalletController
+  /v2/Pay/OnceOff:
+    post:
+      operationId: Pay_OnceOff
+      parameters:
+      - description: The API key.
+        in: header
+        name: api-key
+        schema:
+          format: guid
+          nullable: false
+          type: string
+          x-originalName: apiKey
+        x-originalName: apiKey
+      - description: The testing flag.
+        in: header
+        name: test
+        schema:
+          default: false
+          nullable: false
+          type: boolean
+          x-originalName: isTesting
+        x-originalName: isTesting
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayPayment"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayPayment"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayPayment"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayPayment"
+        description: VodaPayGatewayPayment.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayResponse"
+          description: payment intent
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayResponse"
+          description: Error performing a payment intent
+      summary: Immediate payment intent.
+      tags:
+      - Pay
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/PayController
+  /v2/Pay/CompleteOnceOff:
+    post:
+      operationId: Pay_CompleteOnceOff
+      parameters:
+      - description: The API key.
+        in: header
+        name: api-key
+        schema:
+          format: guid
+          nullable: false
+          type: string
+          x-originalName: apiKey
+        x-originalName: apiKey
+      - description: "if set to true [is testing]."
+        in: header
+        name: test
+        schema:
+          default: false
+          nullable: false
+          type: boolean
+          x-originalName: isTesting
+        x-originalName: isTesting
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayPaymentComplete"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayPaymentComplete"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayPaymentComplete"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayPaymentComplete"
+        description: VodaPayGatewayPaymentComplete.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayCompleteResponse"
+          description: Complete a payment
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayCompleteResponse"
+          description: Error completing a payment
+      summary: Complete payment.
+      tags:
+      - Pay
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/PayController
+  /v2/Pay/Recurring:
+    post:
+      operationId: Pay_Recurring
+      parameters:
+      - description: The API key.
+        in: header
+        name: api-key
+        schema:
+          format: guid
+          nullable: false
+          type: string
+          x-originalName: apiKey
+        x-originalName: apiKey
+      - description: "if set to true [is testing]."
+        in: header
+        name: test
+        schema:
+          default: false
+          nullable: false
+          type: boolean
+          x-originalName: isTesting
+        x-originalName: isTesting
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayRecurring"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayRecurring"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayRecurring"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayRecurring"
+        description: VodaPayGatewayRecurring.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayResponse"
+          description: Recurring payment
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayResponse"
+          description: Error with recurring payment
+      summary: Create recurring payment.
+      tags:
+      - Pay
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/PayController
+  /v2/Pay/SubmitRecurring:
+    post:
+      operationId: Pay_SubmitRecurring
+      parameters:
+      - description: The API key.
+        in: header
+        name: api-key
+        schema:
+          format: guid
+          nullable: false
+          type: string
+          x-originalName: apiKey
+        x-originalName: apiKey
+      - description: "if set to true [is testing]."
+        in: header
+        name: test
+        schema:
+          default: false
+          nullable: false
+          type: boolean
+          x-originalName: isTesting
+        x-originalName: isTesting
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayRecurringSubmit"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayRecurringSubmit"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayRecurringSubmit"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayRecurringSubmit"
+        description: VodaPayGatewayRecurringSubmit.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewaySubmitRecurringResponse"
+          description: Submit recurring payment
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewaySubmitRecurringResponse"
+          description: Error with submitting a recurring payment
+      summary: Submit recurring payment.
+      tags:
+      - Pay
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/PayController
+  /v2/Pay/Refund:
+    post:
+      operationId: Pay_Refund
+      parameters:
+      - description: The API key.
+        in: header
+        name: api-key
+        schema:
+          format: guid
+          nullable: false
+          type: string
+          x-originalName: apiKey
+        x-originalName: apiKey
+      - description: "if set to true [is testing]."
+        in: header
+        name: test
+        schema:
+          default: false
+          nullable: false
+          type: boolean
+          x-originalName: isTesting
+        x-originalName: isTesting
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayRefund"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayRefund"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayRefund"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayRefund"
+        description: VodaPayGatewayRefund.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayRefundResponse"
+          description: Immediate refund
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayRefundResponse"
+          description: Error with immediate refund
+      summary: Immediate refund.
+      tags:
+      - Pay
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/PayController
+  /v2/Token/Create:
+    post:
+      operationId: Token_Create
+      parameters:
+      - description: The API key.
+        in: header
+        name: api-key
+        schema:
+          format: guid
+          nullable: false
+          type: string
+          x-originalName: apiKey
+        x-originalName: apiKey
+      - description: 'Is testing '
+        in: header
+        name: test
+        schema:
+          default: false
+          nullable: false
+          type: boolean
+          x-originalName: isTesting
+        x-originalName: isTesting
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayCreateToken"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayCreateToken"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayCreateToken"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayCreateToken"
+        description: VodaPayGatewayCreateToken.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayTokenResponse"
+          description: Initiate the issue of a token
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayTokenResponse"
+          description: Error with initiating the issue of a token
+      summary: Create the specified model.
+      tags:
+      - Token
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/TokenController
+  /v2/Token/Authenticate:
+    post:
+      operationId: Token_Authenticate
+      parameters:
+      - description: The API key.
+        in: header
+        name: api-key
+        schema:
+          format: guid
+          nullable: false
+          type: string
+          x-originalName: apiKey
+        x-originalName: apiKey
+      - description: 'Is testing '
+        in: header
+        name: test
+        schema:
+          default: false
+          nullable: false
+          type: boolean
+          x-originalName: isTesting
+        x-originalName: isTesting
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayAuthenticateToken"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayAuthenticateToken"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayAuthenticateToken"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayAuthenticateToken"
+        description: VodaPayGatewayTokenResponse.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayTokenResponse"
+          description: Initiate the issue authentication of a token
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayTokenResponse"
+          description: Error with initiating authentication of a token
+      summary: Initiate authentication of token
+      tags:
+      - Token
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/TokenController
+  /v2/Token/List:
+    post:
+      operationId: Token_List
+      parameters:
+      - description: The API key.
+        in: header
+        name: api-key
+        schema:
+          format: guid
+          nullable: false
+          type: string
+          x-originalName: apiKey
+        x-originalName: apiKey
+      - description: 'Is testing '
+        in: header
+        name: test
+        schema:
+          default: false
+          nullable: false
+          type: boolean
+          x-originalName: isTesting
+        x-originalName: isTesting
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayListToken"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayListToken"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayListToken"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayListToken"
+        description: VodaPayGatewayListToken.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayTokenListResponse"
+          description: Get a list of a tokens
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayTokenListResponse"
+          description: Error with getting a list of a tokens
+      summary: Get a list of tokens.
+      tags:
+      - Token
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/TokenController
+  /v2/Token/{control}:
+    post:
+      operationId: Token_Control
+      parameters:
+      - in: header
+        name: api-key
+        schema:
+          format: guid
+          nullable: false
+          type: string
+          x-originalName: apiKey
+        x-originalName: apiKey
+      - in: path
+        name: control
+        required: true
+        schema:
+          nullable: false
+          type: string
+      - in: header
+        name: test
+        schema:
+          default: false
+          nullable: false
+          type: boolean
+          x-originalName: isTesting
+        x-originalName: isTesting
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayToken"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayToken"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayToken"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/VodaPayGatewayToken"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayTokenResponse"
+          description: ""
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayTokenResponse"
+          description: ""
+      tags:
+      - Token
+      x-codegen-request-body-name: model
+      x-eov-operation-handler: controllers/TokenController
+  /v2/PayProcess/OnceOff:
+    post:
+      operationId: PayProcess_OnceOff
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PayProcess_OnceOff_request"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayResponse"
+          description: payment intent
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VodaPayGatewayResponse"
+          description: Error performing a payment intent
+      summary: Immediate payment intent form post.
+      tags:
+      - Pay/Process
+      x-eov-operation-handler: controllers/PayProcessController
+components:
+  schemas:
+    WebHookModel:
+      example:
+        eventId: eventId
+        eventName: eventName
+        order:
+          amount:
+            currencyCode: currencyCode
+            value: 0
+          _links:
+            cnp:payment-link:
+              href: https://openapi-generator.tech
+            payment-authorization:
+              href: https://openapi-generator.tech
+            self:
+              href: https://openapi-generator.tech
+            tenant-brand:
+              href: https://openapi-generator.tech
+            payment:
+              href: https://openapi-generator.tech
+            cnp:cancel:
+              href: https://openapi-generator.tech
+            merchant-brand:
+              href: https://openapi-generator.tech
+            cnp:refund:
+              href: https://openapi-generator.tech
+          outletId: outletId
+          language: language
+          merchantDefinedData:
+            traceId: traceId
+            merchantNotificationUrl: merchantNotificationUrl
+            recurringAmount: 3
+            firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+            regularPaymentDay: 9
+            sessionId: sessionId
+            recurringAmountLimit: 2
+            merchantName: merchantName
+            assuranceData: assuranceData
+            frequency: frequency
+            useScheduler: true
+            merchantId: merchantId
+            numberOfInstallments: 7
+            customerId: customerId
+            lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+            echoData: echoData
+            merchantCallbackUrl: merchantCallbackUrl
+            category: null
+          createDateTime: createDateTime
+          responseCode: responseCode
+          reference: reference
+          referrer: referrer
+          emailAddress: emailAddress
+          _embedded:
+            payment:
+            - amount:
+                currencyCode: currencyCode
+                value: 0
+              "3ds":
+                summaryText: summaryText
+                eciDescription: eciDescription
+                eci: eci
+                status: status
+              _links:
+                curies:
+                - templated: true
+                  name: name
+                  href: href
+                - templated: true
+                  name: name
+                  href: href
+                payment:apple_pay:
+                  href: https://openapi-generator.tech
+                self:
+                  href: https://openapi-generator.tech
+                cnp:cancel:
+                  href: https://openapi-generator.tech
+                payment:card:
+                  href: https://openapi-generator.tech
+                payment:samsung_pay:
+                  href: https://openapi-generator.tech
+                payment:saved-card:
+                  href: https://openapi-generator.tech
+                cnp:refund:
+                  href: https://openapi-generator.tech
+              outletId: outletId
+              transactionID: transactionID
+              reference: reference
+              authResponse:
+                authorizationCode: authorizationCode
+                success: true
+                resultCode: resultCode
+                resultMessage: resultMessage
+                rrn: rrn
+              _embedded:
+                cnp:capture:
+                - amount:
+                    currencyCode: currencyCode
+                    value: 0
+                  _links:
+                    cnp:payment-link:
+                      href: https://openapi-generator.tech
+                    payment-authorization:
+                      href: https://openapi-generator.tech
+                    self:
+                      href: https://openapi-generator.tech
+                    tenant-brand:
+                      href: https://openapi-generator.tech
+                    payment:
+                      href: https://openapi-generator.tech
+                    cnp:cancel:
+                      href: https://openapi-generator.tech
+                    merchant-brand:
+                      href: https://openapi-generator.tech
+                    cnp:refund:
+                      href: https://openapi-generator.tech
+                  createdTime: 2000-01-23T04:56:07.000+00:00
+                  state: state
+                - amount:
+                    currencyCode: currencyCode
+                    value: 0
+                  _links:
+                    cnp:payment-link:
+                      href: https://openapi-generator.tech
+                    payment-authorization:
+                      href: https://openapi-generator.tech
+                    self:
+                      href: https://openapi-generator.tech
+                    tenant-brand:
+                      href: https://openapi-generator.tech
+                    payment:
+                      href: https://openapi-generator.tech
+                    cnp:cancel:
+                      href: https://openapi-generator.tech
+                    merchant-brand:
+                      href: https://openapi-generator.tech
+                    cnp:refund:
+                      href: https://openapi-generator.tech
+                  createdTime: 2000-01-23T04:56:07.000+00:00
+                  state: state
+                cnp:refund:
+                - amount:
+                    currencyCode: currencyCode
+                    value: 0
+                  _links:
+                    cnp:payment-link:
+                      href: https://openapi-generator.tech
+                    payment-authorization:
+                      href: https://openapi-generator.tech
+                    self:
+                      href: https://openapi-generator.tech
+                    tenant-brand:
+                      href: https://openapi-generator.tech
+                    payment:
+                      href: https://openapi-generator.tech
+                    cnp:cancel:
+                      href: https://openapi-generator.tech
+                    merchant-brand:
+                      href: https://openapi-generator.tech
+                    cnp:refund:
+                      href: https://openapi-generator.tech
+                  createdTime: createdTime
+                  state: state
+                - amount:
+                    currencyCode: currencyCode
+                    value: 0
+                  _links:
+                    cnp:payment-link:
+                      href: https://openapi-generator.tech
+                    payment-authorization:
+                      href: https://openapi-generator.tech
+                    self:
+                      href: https://openapi-generator.tech
+                    tenant-brand:
+                      href: https://openapi-generator.tech
+                    payment:
+                      href: https://openapi-generator.tech
+                    cnp:cancel:
+                      href: https://openapi-generator.tech
+                    merchant-brand:
+                      href: https://openapi-generator.tech
+                    cnp:refund:
+                      href: https://openapi-generator.tech
+                  createdTime: createdTime
+                  state: state
+              verifyResponse:
+                success: true
+                resultCode: resultCode
+                mid: mid
+                resultMessage: resultMessage
+                rrn: rrn
+              paymentMethod:
+                cardholderName: cardholderName
+                name: name
+                expiry: expiry
+                pan: pan
+              orderReference: orderReference
+              _id: _id
+              state: state
+              updateDateTime: 2000-01-23T04:56:07.000+00:00
+              ozowPayData:
+                createdAt: 2000-01-23T04:56:07.000+00:00
+                amount:
+                  currencyCode: currencyCode
+                  value: 0
+                transactionReference: transactionReference
+                name: name
+                paymentStatus: paymentStatus
+                rrn: rrn
+              savedCard:
+                saveMyCardOptedByUser: true
+                maskedPan: maskedPan
+                scheme: scheme
+                cardholderName: cardholderName
+                expiry: expiry
+                cardToken: cardToken
+              originIp: originIp
+              additionalAttributes:
+                traceId: traceId
+                merchantNotificationUrl: merchantNotificationUrl
+                originalPaymentReference: originalPaymentReference
+                recurringAmount: 5
+                firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+                regularPaymentDay: 5
+                sessionId: sessionId
+                sendNotification: true
+                recurringAmountLimit: 2
+                merchantName: merchantName
+                assuranceData: assuranceData
+                frequency: frequency
+                useScheduler: true
+                originalPaymentToken: originalPaymentToken
+                merchantId: merchantId
+                numberOfInstallments: 1
+                customerId: customerId
+                lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+                echoData: echoData
+                merchantCallbackUrl: merchantCallbackUrl
+                category: 6
+            - amount:
+                currencyCode: currencyCode
+                value: 0
+              "3ds":
+                summaryText: summaryText
+                eciDescription: eciDescription
+                eci: eci
+                status: status
+              _links:
+                curies:
+                - templated: true
+                  name: name
+                  href: href
+                - templated: true
+                  name: name
+                  href: href
+                payment:apple_pay:
+                  href: https://openapi-generator.tech
+                self:
+                  href: https://openapi-generator.tech
+                cnp:cancel:
+                  href: https://openapi-generator.tech
+                payment:card:
+                  href: https://openapi-generator.tech
+                payment:samsung_pay:
+                  href: https://openapi-generator.tech
+                payment:saved-card:
+                  href: https://openapi-generator.tech
+                cnp:refund:
+                  href: https://openapi-generator.tech
+              outletId: outletId
+              transactionID: transactionID
+              reference: reference
+              authResponse:
+                authorizationCode: authorizationCode
+                success: true
+                resultCode: resultCode
+                resultMessage: resultMessage
+                rrn: rrn
+              _embedded:
+                cnp:capture:
+                - amount:
+                    currencyCode: currencyCode
+                    value: 0
+                  _links:
+                    cnp:payment-link:
+                      href: https://openapi-generator.tech
+                    payment-authorization:
+                      href: https://openapi-generator.tech
+                    self:
+                      href: https://openapi-generator.tech
+                    tenant-brand:
+                      href: https://openapi-generator.tech
+                    payment:
+                      href: https://openapi-generator.tech
+                    cnp:cancel:
+                      href: https://openapi-generator.tech
+                    merchant-brand:
+                      href: https://openapi-generator.tech
+                    cnp:refund:
+                      href: https://openapi-generator.tech
+                  createdTime: 2000-01-23T04:56:07.000+00:00
+                  state: state
+                - amount:
+                    currencyCode: currencyCode
+                    value: 0
+                  _links:
+                    cnp:payment-link:
+                      href: https://openapi-generator.tech
+                    payment-authorization:
+                      href: https://openapi-generator.tech
+                    self:
+                      href: https://openapi-generator.tech
+                    tenant-brand:
+                      href: https://openapi-generator.tech
+                    payment:
+                      href: https://openapi-generator.tech
+                    cnp:cancel:
+                      href: https://openapi-generator.tech
+                    merchant-brand:
+                      href: https://openapi-generator.tech
+                    cnp:refund:
+                      href: https://openapi-generator.tech
+                  createdTime: 2000-01-23T04:56:07.000+00:00
+                  state: state
+                cnp:refund:
+                - amount:
+                    currencyCode: currencyCode
+                    value: 0
+                  _links:
+                    cnp:payment-link:
+                      href: https://openapi-generator.tech
+                    payment-authorization:
+                      href: https://openapi-generator.tech
+                    self:
+                      href: https://openapi-generator.tech
+                    tenant-brand:
+                      href: https://openapi-generator.tech
+                    payment:
+                      href: https://openapi-generator.tech
+                    cnp:cancel:
+                      href: https://openapi-generator.tech
+                    merchant-brand:
+                      href: https://openapi-generator.tech
+                    cnp:refund:
+                      href: https://openapi-generator.tech
+                  createdTime: createdTime
+                  state: state
+                - amount:
+                    currencyCode: currencyCode
+                    value: 0
+                  _links:
+                    cnp:payment-link:
+                      href: https://openapi-generator.tech
+                    payment-authorization:
+                      href: https://openapi-generator.tech
+                    self:
+                      href: https://openapi-generator.tech
+                    tenant-brand:
+                      href: https://openapi-generator.tech
+                    payment:
+                      href: https://openapi-generator.tech
+                    cnp:cancel:
+                      href: https://openapi-generator.tech
+                    merchant-brand:
+                      href: https://openapi-generator.tech
+                    cnp:refund:
+                      href: https://openapi-generator.tech
+                  createdTime: createdTime
+                  state: state
+              verifyResponse:
+                success: true
+                resultCode: resultCode
+                mid: mid
+                resultMessage: resultMessage
+                rrn: rrn
+              paymentMethod:
+                cardholderName: cardholderName
+                name: name
+                expiry: expiry
+                pan: pan
+              orderReference: orderReference
+              _id: _id
+              state: state
+              updateDateTime: 2000-01-23T04:56:07.000+00:00
+              ozowPayData:
+                createdAt: 2000-01-23T04:56:07.000+00:00
+                amount:
+                  currencyCode: currencyCode
+                  value: 0
+                transactionReference: transactionReference
+                name: name
+                paymentStatus: paymentStatus
+                rrn: rrn
+              savedCard:
+                saveMyCardOptedByUser: true
+                maskedPan: maskedPan
+                scheme: scheme
+                cardholderName: cardholderName
+                expiry: expiry
+                cardToken: cardToken
+              originIp: originIp
+              additionalAttributes:
+                traceId: traceId
+                merchantNotificationUrl: merchantNotificationUrl
+                originalPaymentReference: originalPaymentReference
+                recurringAmount: 5
+                firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+                regularPaymentDay: 5
+                sessionId: sessionId
+                sendNotification: true
+                recurringAmountLimit: 2
+                merchantName: merchantName
+                assuranceData: assuranceData
+                frequency: frequency
+                useScheduler: true
+                originalPaymentToken: originalPaymentToken
+                merchantId: merchantId
+                numberOfInstallments: 1
+                customerId: customerId
+                lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+                echoData: echoData
+                merchantCallbackUrl: merchantCallbackUrl
+                category: 6
+          paymentMethods:
+            wallet:
+            - wallet
+            - wallet
+            card:
+            - card
+            - card
+          action: action
+          merchantAttributes:
+            redirectUrl: redirectUrl
+            skip3DS: skip3DS
+            skipConfirmationPage: skipConfirmationPage
+          _id: _id
+          responseMessage: responseMessage
+          formattedAmount: formattedAmount
+          formattedOrderSummary: "{}"
+      properties:
+        eventId:
+          type: string
+        eventName:
+          type: string
+        order:
+          $ref: "#/components/schemas/CreateEcomOrderResponse"
+      required:
+      - eventId
+      - eventName
+      - order
+      type: object
+    CreateEcomOrderResponse:
+      example:
+        amount:
+          currencyCode: currencyCode
+          value: 0
+        _links:
+          cnp:payment-link:
+            href: https://openapi-generator.tech
+          payment-authorization:
+            href: https://openapi-generator.tech
+          self:
+            href: https://openapi-generator.tech
+          tenant-brand:
+            href: https://openapi-generator.tech
+          payment:
+            href: https://openapi-generator.tech
+          cnp:cancel:
+            href: https://openapi-generator.tech
+          merchant-brand:
+            href: https://openapi-generator.tech
+          cnp:refund:
+            href: https://openapi-generator.tech
+        outletId: outletId
+        language: language
+        merchantDefinedData:
+          traceId: traceId
+          merchantNotificationUrl: merchantNotificationUrl
+          recurringAmount: 3
+          firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+          regularPaymentDay: 9
+          sessionId: sessionId
+          recurringAmountLimit: 2
+          merchantName: merchantName
+          assuranceData: assuranceData
+          frequency: frequency
+          useScheduler: true
+          merchantId: merchantId
+          numberOfInstallments: 7
+          customerId: customerId
+          lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+          echoData: echoData
+          merchantCallbackUrl: merchantCallbackUrl
+          category: null
+        createDateTime: createDateTime
+        responseCode: responseCode
+        reference: reference
+        referrer: referrer
+        emailAddress: emailAddress
+        _embedded:
+          payment:
+          - amount:
+              currencyCode: currencyCode
+              value: 0
+            "3ds":
+              summaryText: summaryText
+              eciDescription: eciDescription
+              eci: eci
+              status: status
+            _links:
+              curies:
+              - templated: true
+                name: name
+                href: href
+              - templated: true
+                name: name
+                href: href
+              payment:apple_pay:
+                href: https://openapi-generator.tech
+              self:
+                href: https://openapi-generator.tech
+              cnp:cancel:
+                href: https://openapi-generator.tech
+              payment:card:
+                href: https://openapi-generator.tech
+              payment:samsung_pay:
+                href: https://openapi-generator.tech
+              payment:saved-card:
+                href: https://openapi-generator.tech
+              cnp:refund:
+                href: https://openapi-generator.tech
+            outletId: outletId
+            transactionID: transactionID
+            reference: reference
+            authResponse:
+              authorizationCode: authorizationCode
+              success: true
+              resultCode: resultCode
+              resultMessage: resultMessage
+              rrn: rrn
+            _embedded:
+              cnp:capture:
+              - amount:
+                  currencyCode: currencyCode
+                  value: 0
+                _links:
+                  cnp:payment-link:
+                    href: https://openapi-generator.tech
+                  payment-authorization:
+                    href: https://openapi-generator.tech
+                  self:
+                    href: https://openapi-generator.tech
+                  tenant-brand:
+                    href: https://openapi-generator.tech
+                  payment:
+                    href: https://openapi-generator.tech
+                  cnp:cancel:
+                    href: https://openapi-generator.tech
+                  merchant-brand:
+                    href: https://openapi-generator.tech
+                  cnp:refund:
+                    href: https://openapi-generator.tech
+                createdTime: 2000-01-23T04:56:07.000+00:00
+                state: state
+              - amount:
+                  currencyCode: currencyCode
+                  value: 0
+                _links:
+                  cnp:payment-link:
+                    href: https://openapi-generator.tech
+                  payment-authorization:
+                    href: https://openapi-generator.tech
+                  self:
+                    href: https://openapi-generator.tech
+                  tenant-brand:
+                    href: https://openapi-generator.tech
+                  payment:
+                    href: https://openapi-generator.tech
+                  cnp:cancel:
+                    href: https://openapi-generator.tech
+                  merchant-brand:
+                    href: https://openapi-generator.tech
+                  cnp:refund:
+                    href: https://openapi-generator.tech
+                createdTime: 2000-01-23T04:56:07.000+00:00
+                state: state
+              cnp:refund:
+              - amount:
+                  currencyCode: currencyCode
+                  value: 0
+                _links:
+                  cnp:payment-link:
+                    href: https://openapi-generator.tech
+                  payment-authorization:
+                    href: https://openapi-generator.tech
+                  self:
+                    href: https://openapi-generator.tech
+                  tenant-brand:
+                    href: https://openapi-generator.tech
+                  payment:
+                    href: https://openapi-generator.tech
+                  cnp:cancel:
+                    href: https://openapi-generator.tech
+                  merchant-brand:
+                    href: https://openapi-generator.tech
+                  cnp:refund:
+                    href: https://openapi-generator.tech
+                createdTime: createdTime
+                state: state
+              - amount:
+                  currencyCode: currencyCode
+                  value: 0
+                _links:
+                  cnp:payment-link:
+                    href: https://openapi-generator.tech
+                  payment-authorization:
+                    href: https://openapi-generator.tech
+                  self:
+                    href: https://openapi-generator.tech
+                  tenant-brand:
+                    href: https://openapi-generator.tech
+                  payment:
+                    href: https://openapi-generator.tech
+                  cnp:cancel:
+                    href: https://openapi-generator.tech
+                  merchant-brand:
+                    href: https://openapi-generator.tech
+                  cnp:refund:
+                    href: https://openapi-generator.tech
+                createdTime: createdTime
+                state: state
+            verifyResponse:
+              success: true
+              resultCode: resultCode
+              mid: mid
+              resultMessage: resultMessage
+              rrn: rrn
+            paymentMethod:
+              cardholderName: cardholderName
+              name: name
+              expiry: expiry
+              pan: pan
+            orderReference: orderReference
+            _id: _id
+            state: state
+            updateDateTime: 2000-01-23T04:56:07.000+00:00
+            ozowPayData:
+              createdAt: 2000-01-23T04:56:07.000+00:00
+              amount:
+                currencyCode: currencyCode
+                value: 0
+              transactionReference: transactionReference
+              name: name
+              paymentStatus: paymentStatus
+              rrn: rrn
+            savedCard:
+              saveMyCardOptedByUser: true
+              maskedPan: maskedPan
+              scheme: scheme
+              cardholderName: cardholderName
+              expiry: expiry
+              cardToken: cardToken
+            originIp: originIp
+            additionalAttributes:
+              traceId: traceId
+              merchantNotificationUrl: merchantNotificationUrl
+              originalPaymentReference: originalPaymentReference
+              recurringAmount: 5
+              firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+              regularPaymentDay: 5
+              sessionId: sessionId
+              sendNotification: true
+              recurringAmountLimit: 2
+              merchantName: merchantName
+              assuranceData: assuranceData
+              frequency: frequency
+              useScheduler: true
+              originalPaymentToken: originalPaymentToken
+              merchantId: merchantId
+              numberOfInstallments: 1
+              customerId: customerId
+              lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+              echoData: echoData
+              merchantCallbackUrl: merchantCallbackUrl
+              category: 6
+          - amount:
+              currencyCode: currencyCode
+              value: 0
+            "3ds":
+              summaryText: summaryText
+              eciDescription: eciDescription
+              eci: eci
+              status: status
+            _links:
+              curies:
+              - templated: true
+                name: name
+                href: href
+              - templated: true
+                name: name
+                href: href
+              payment:apple_pay:
+                href: https://openapi-generator.tech
+              self:
+                href: https://openapi-generator.tech
+              cnp:cancel:
+                href: https://openapi-generator.tech
+              payment:card:
+                href: https://openapi-generator.tech
+              payment:samsung_pay:
+                href: https://openapi-generator.tech
+              payment:saved-card:
+                href: https://openapi-generator.tech
+              cnp:refund:
+                href: https://openapi-generator.tech
+            outletId: outletId
+            transactionID: transactionID
+            reference: reference
+            authResponse:
+              authorizationCode: authorizationCode
+              success: true
+              resultCode: resultCode
+              resultMessage: resultMessage
+              rrn: rrn
+            _embedded:
+              cnp:capture:
+              - amount:
+                  currencyCode: currencyCode
+                  value: 0
+                _links:
+                  cnp:payment-link:
+                    href: https://openapi-generator.tech
+                  payment-authorization:
+                    href: https://openapi-generator.tech
+                  self:
+                    href: https://openapi-generator.tech
+                  tenant-brand:
+                    href: https://openapi-generator.tech
+                  payment:
+                    href: https://openapi-generator.tech
+                  cnp:cancel:
+                    href: https://openapi-generator.tech
+                  merchant-brand:
+                    href: https://openapi-generator.tech
+                  cnp:refund:
+                    href: https://openapi-generator.tech
+                createdTime: 2000-01-23T04:56:07.000+00:00
+                state: state
+              - amount:
+                  currencyCode: currencyCode
+                  value: 0
+                _links:
+                  cnp:payment-link:
+                    href: https://openapi-generator.tech
+                  payment-authorization:
+                    href: https://openapi-generator.tech
+                  self:
+                    href: https://openapi-generator.tech
+                  tenant-brand:
+                    href: https://openapi-generator.tech
+                  payment:
+                    href: https://openapi-generator.tech
+                  cnp:cancel:
+                    href: https://openapi-generator.tech
+                  merchant-brand:
+                    href: https://openapi-generator.tech
+                  cnp:refund:
+                    href: https://openapi-generator.tech
+                createdTime: 2000-01-23T04:56:07.000+00:00
+                state: state
+              cnp:refund:
+              - amount:
+                  currencyCode: currencyCode
+                  value: 0
+                _links:
+                  cnp:payment-link:
+                    href: https://openapi-generator.tech
+                  payment-authorization:
+                    href: https://openapi-generator.tech
+                  self:
+                    href: https://openapi-generator.tech
+                  tenant-brand:
+                    href: https://openapi-generator.tech
+                  payment:
+                    href: https://openapi-generator.tech
+                  cnp:cancel:
+                    href: https://openapi-generator.tech
+                  merchant-brand:
+                    href: https://openapi-generator.tech
+                  cnp:refund:
+                    href: https://openapi-generator.tech
+                createdTime: createdTime
+                state: state
+              - amount:
+                  currencyCode: currencyCode
+                  value: 0
+                _links:
+                  cnp:payment-link:
+                    href: https://openapi-generator.tech
+                  payment-authorization:
+                    href: https://openapi-generator.tech
+                  self:
+                    href: https://openapi-generator.tech
+                  tenant-brand:
+                    href: https://openapi-generator.tech
+                  payment:
+                    href: https://openapi-generator.tech
+                  cnp:cancel:
+                    href: https://openapi-generator.tech
+                  merchant-brand:
+                    href: https://openapi-generator.tech
+                  cnp:refund:
+                    href: https://openapi-generator.tech
+                createdTime: createdTime
+                state: state
+            verifyResponse:
+              success: true
+              resultCode: resultCode
+              mid: mid
+              resultMessage: resultMessage
+              rrn: rrn
+            paymentMethod:
+              cardholderName: cardholderName
+              name: name
+              expiry: expiry
+              pan: pan
+            orderReference: orderReference
+            _id: _id
+            state: state
+            updateDateTime: 2000-01-23T04:56:07.000+00:00
+            ozowPayData:
+              createdAt: 2000-01-23T04:56:07.000+00:00
+              amount:
+                currencyCode: currencyCode
+                value: 0
+              transactionReference: transactionReference
+              name: name
+              paymentStatus: paymentStatus
+              rrn: rrn
+            savedCard:
+              saveMyCardOptedByUser: true
+              maskedPan: maskedPan
+              scheme: scheme
+              cardholderName: cardholderName
+              expiry: expiry
+              cardToken: cardToken
+            originIp: originIp
+            additionalAttributes:
+              traceId: traceId
+              merchantNotificationUrl: merchantNotificationUrl
+              originalPaymentReference: originalPaymentReference
+              recurringAmount: 5
+              firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+              regularPaymentDay: 5
+              sessionId: sessionId
+              sendNotification: true
+              recurringAmountLimit: 2
+              merchantName: merchantName
+              assuranceData: assuranceData
+              frequency: frequency
+              useScheduler: true
+              originalPaymentToken: originalPaymentToken
+              merchantId: merchantId
+              numberOfInstallments: 1
+              customerId: customerId
+              lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+              echoData: echoData
+              merchantCallbackUrl: merchantCallbackUrl
+              category: 6
+        paymentMethods:
+          wallet:
+          - wallet
+          - wallet
+          card:
+          - card
+          - card
+        action: action
+        merchantAttributes:
+          redirectUrl: redirectUrl
+          skip3DS: skip3DS
+          skipConfirmationPage: skipConfirmationPage
+        _id: _id
+        responseMessage: responseMessage
+        formattedAmount: formattedAmount
+        formattedOrderSummary: "{}"
+      properties:
+        _id:
+          type: string
+        _links:
+          $ref: "#/components/schemas/Links"
+        action:
+          type: string
+        amount:
+          $ref: "#/components/schemas/Amount"
+        language:
+          type: string
+        merchantAttributes:
+          $ref: "#/components/schemas/MerchantAttributes"
+        emailAddress:
+          type: string
+        reference:
+          format: guid
+          type: string
+        outletId:
+          format: guid
+          type: string
+        createDateTime:
+          type: string
+        paymentMethods:
+          $ref: "#/components/schemas/PaymentMethods"
+        referrer:
+          type: string
+        formattedAmount:
+          type: string
+        formattedOrderSummary:
+          type: object
+        _embedded:
+          $ref: "#/components/schemas/Embedded"
+        merchantDefinedData:
+          $ref: "#/components/schemas/MerchantDefinedData"
+        responseCode:
+          type: string
+        responseMessage:
+          type: string
+      required:
+      - _embedded
+      - _id
+      - _links
+      - action
+      - amount
+      - createDateTime
+      - formattedAmount
+      - formattedOrderSummary
+      - language
+      - merchantAttributes
+      - outletId
+      - paymentMethods
+      - reference
+      - referrer
+      type: object
+    Links:
+      example:
+        cnp:payment-link:
+          href: https://openapi-generator.tech
+        payment-authorization:
+          href: https://openapi-generator.tech
+        self:
+          href: https://openapi-generator.tech
+        tenant-brand:
+          href: https://openapi-generator.tech
+        payment:
+          href: https://openapi-generator.tech
+        cnp:cancel:
+          href: https://openapi-generator.tech
+        merchant-brand:
+          href: https://openapi-generator.tech
+        cnp:refund:
+          href: https://openapi-generator.tech
+      properties:
+        cnp:payment-link:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        payment-authorization:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        self:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        tenant-brand:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        payment:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        merchant-brand:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        cnp:refund:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        cnp:cancel:
+          $ref: "#/components/schemas/CnpPaymentLink"
+      type: object
+    CnpPaymentLink:
+      example:
+        href: https://openapi-generator.tech
+      properties:
+        href:
+          format: uri
+          type: string
+      type: object
+    Amount:
+      example:
+        currencyCode: currencyCode
+        value: 0
+      properties:
+        currencyCode:
+          type: string
+        value:
+          format: int64
+          type: integer
+      required:
+      - currencyCode
+      - value
+      type: object
+    MerchantAttributes:
+      example:
+        redirectUrl: redirectUrl
+        skip3DS: skip3DS
+        skipConfirmationPage: skipConfirmationPage
+      properties:
+        skip3DS:
+          type: string
+        redirectUrl:
+          type: string
+        skipConfirmationPage:
+          type: string
+      type: object
+    PaymentMethods:
+      example:
+        wallet:
+        - wallet
+        - wallet
+        card:
+        - card
+        - card
+      properties:
+        card:
+          items:
+            type: string
+          type: array
+        wallet:
+          items:
+            type: string
+          type: array
+      required:
+      - card
+      type: object
+    FormattedOrderSummary:
+      type: object
+    Embedded:
+      example:
+        payment:
+        - amount:
+            currencyCode: currencyCode
+            value: 0
+          "3ds":
+            summaryText: summaryText
+            eciDescription: eciDescription
+            eci: eci
+            status: status
+          _links:
+            curies:
+            - templated: true
+              name: name
+              href: href
+            - templated: true
+              name: name
+              href: href
+            payment:apple_pay:
+              href: https://openapi-generator.tech
+            self:
+              href: https://openapi-generator.tech
+            cnp:cancel:
+              href: https://openapi-generator.tech
+            payment:card:
+              href: https://openapi-generator.tech
+            payment:samsung_pay:
+              href: https://openapi-generator.tech
+            payment:saved-card:
+              href: https://openapi-generator.tech
+            cnp:refund:
+              href: https://openapi-generator.tech
+          outletId: outletId
+          transactionID: transactionID
+          reference: reference
+          authResponse:
+            authorizationCode: authorizationCode
+            success: true
+            resultCode: resultCode
+            resultMessage: resultMessage
+            rrn: rrn
+          _embedded:
+            cnp:capture:
+            - amount:
+                currencyCode: currencyCode
+                value: 0
+              _links:
+                cnp:payment-link:
+                  href: https://openapi-generator.tech
+                payment-authorization:
+                  href: https://openapi-generator.tech
+                self:
+                  href: https://openapi-generator.tech
+                tenant-brand:
+                  href: https://openapi-generator.tech
+                payment:
+                  href: https://openapi-generator.tech
+                cnp:cancel:
+                  href: https://openapi-generator.tech
+                merchant-brand:
+                  href: https://openapi-generator.tech
+                cnp:refund:
+                  href: https://openapi-generator.tech
+              createdTime: 2000-01-23T04:56:07.000+00:00
+              state: state
+            - amount:
+                currencyCode: currencyCode
+                value: 0
+              _links:
+                cnp:payment-link:
+                  href: https://openapi-generator.tech
+                payment-authorization:
+                  href: https://openapi-generator.tech
+                self:
+                  href: https://openapi-generator.tech
+                tenant-brand:
+                  href: https://openapi-generator.tech
+                payment:
+                  href: https://openapi-generator.tech
+                cnp:cancel:
+                  href: https://openapi-generator.tech
+                merchant-brand:
+                  href: https://openapi-generator.tech
+                cnp:refund:
+                  href: https://openapi-generator.tech
+              createdTime: 2000-01-23T04:56:07.000+00:00
+              state: state
+            cnp:refund:
+            - amount:
+                currencyCode: currencyCode
+                value: 0
+              _links:
+                cnp:payment-link:
+                  href: https://openapi-generator.tech
+                payment-authorization:
+                  href: https://openapi-generator.tech
+                self:
+                  href: https://openapi-generator.tech
+                tenant-brand:
+                  href: https://openapi-generator.tech
+                payment:
+                  href: https://openapi-generator.tech
+                cnp:cancel:
+                  href: https://openapi-generator.tech
+                merchant-brand:
+                  href: https://openapi-generator.tech
+                cnp:refund:
+                  href: https://openapi-generator.tech
+              createdTime: createdTime
+              state: state
+            - amount:
+                currencyCode: currencyCode
+                value: 0
+              _links:
+                cnp:payment-link:
+                  href: https://openapi-generator.tech
+                payment-authorization:
+                  href: https://openapi-generator.tech
+                self:
+                  href: https://openapi-generator.tech
+                tenant-brand:
+                  href: https://openapi-generator.tech
+                payment:
+                  href: https://openapi-generator.tech
+                cnp:cancel:
+                  href: https://openapi-generator.tech
+                merchant-brand:
+                  href: https://openapi-generator.tech
+                cnp:refund:
+                  href: https://openapi-generator.tech
+              createdTime: createdTime
+              state: state
+          verifyResponse:
+            success: true
+            resultCode: resultCode
+            mid: mid
+            resultMessage: resultMessage
+            rrn: rrn
+          paymentMethod:
+            cardholderName: cardholderName
+            name: name
+            expiry: expiry
+            pan: pan
+          orderReference: orderReference
+          _id: _id
+          state: state
+          updateDateTime: 2000-01-23T04:56:07.000+00:00
+          ozowPayData:
+            createdAt: 2000-01-23T04:56:07.000+00:00
+            amount:
+              currencyCode: currencyCode
+              value: 0
+            transactionReference: transactionReference
+            name: name
+            paymentStatus: paymentStatus
+            rrn: rrn
+          savedCard:
+            saveMyCardOptedByUser: true
+            maskedPan: maskedPan
+            scheme: scheme
+            cardholderName: cardholderName
+            expiry: expiry
+            cardToken: cardToken
+          originIp: originIp
+          additionalAttributes:
+            traceId: traceId
+            merchantNotificationUrl: merchantNotificationUrl
+            originalPaymentReference: originalPaymentReference
+            recurringAmount: 5
+            firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+            regularPaymentDay: 5
+            sessionId: sessionId
+            sendNotification: true
+            recurringAmountLimit: 2
+            merchantName: merchantName
+            assuranceData: assuranceData
+            frequency: frequency
+            useScheduler: true
+            originalPaymentToken: originalPaymentToken
+            merchantId: merchantId
+            numberOfInstallments: 1
+            customerId: customerId
+            lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+            echoData: echoData
+            merchantCallbackUrl: merchantCallbackUrl
+            category: 6
+        - amount:
+            currencyCode: currencyCode
+            value: 0
+          "3ds":
+            summaryText: summaryText
+            eciDescription: eciDescription
+            eci: eci
+            status: status
+          _links:
+            curies:
+            - templated: true
+              name: name
+              href: href
+            - templated: true
+              name: name
+              href: href
+            payment:apple_pay:
+              href: https://openapi-generator.tech
+            self:
+              href: https://openapi-generator.tech
+            cnp:cancel:
+              href: https://openapi-generator.tech
+            payment:card:
+              href: https://openapi-generator.tech
+            payment:samsung_pay:
+              href: https://openapi-generator.tech
+            payment:saved-card:
+              href: https://openapi-generator.tech
+            cnp:refund:
+              href: https://openapi-generator.tech
+          outletId: outletId
+          transactionID: transactionID
+          reference: reference
+          authResponse:
+            authorizationCode: authorizationCode
+            success: true
+            resultCode: resultCode
+            resultMessage: resultMessage
+            rrn: rrn
+          _embedded:
+            cnp:capture:
+            - amount:
+                currencyCode: currencyCode
+                value: 0
+              _links:
+                cnp:payment-link:
+                  href: https://openapi-generator.tech
+                payment-authorization:
+                  href: https://openapi-generator.tech
+                self:
+                  href: https://openapi-generator.tech
+                tenant-brand:
+                  href: https://openapi-generator.tech
+                payment:
+                  href: https://openapi-generator.tech
+                cnp:cancel:
+                  href: https://openapi-generator.tech
+                merchant-brand:
+                  href: https://openapi-generator.tech
+                cnp:refund:
+                  href: https://openapi-generator.tech
+              createdTime: 2000-01-23T04:56:07.000+00:00
+              state: state
+            - amount:
+                currencyCode: currencyCode
+                value: 0
+              _links:
+                cnp:payment-link:
+                  href: https://openapi-generator.tech
+                payment-authorization:
+                  href: https://openapi-generator.tech
+                self:
+                  href: https://openapi-generator.tech
+                tenant-brand:
+                  href: https://openapi-generator.tech
+                payment:
+                  href: https://openapi-generator.tech
+                cnp:cancel:
+                  href: https://openapi-generator.tech
+                merchant-brand:
+                  href: https://openapi-generator.tech
+                cnp:refund:
+                  href: https://openapi-generator.tech
+              createdTime: 2000-01-23T04:56:07.000+00:00
+              state: state
+            cnp:refund:
+            - amount:
+                currencyCode: currencyCode
+                value: 0
+              _links:
+                cnp:payment-link:
+                  href: https://openapi-generator.tech
+                payment-authorization:
+                  href: https://openapi-generator.tech
+                self:
+                  href: https://openapi-generator.tech
+                tenant-brand:
+                  href: https://openapi-generator.tech
+                payment:
+                  href: https://openapi-generator.tech
+                cnp:cancel:
+                  href: https://openapi-generator.tech
+                merchant-brand:
+                  href: https://openapi-generator.tech
+                cnp:refund:
+                  href: https://openapi-generator.tech
+              createdTime: createdTime
+              state: state
+            - amount:
+                currencyCode: currencyCode
+                value: 0
+              _links:
+                cnp:payment-link:
+                  href: https://openapi-generator.tech
+                payment-authorization:
+                  href: https://openapi-generator.tech
+                self:
+                  href: https://openapi-generator.tech
+                tenant-brand:
+                  href: https://openapi-generator.tech
+                payment:
+                  href: https://openapi-generator.tech
+                cnp:cancel:
+                  href: https://openapi-generator.tech
+                merchant-brand:
+                  href: https://openapi-generator.tech
+                cnp:refund:
+                  href: https://openapi-generator.tech
+              createdTime: createdTime
+              state: state
+          verifyResponse:
+            success: true
+            resultCode: resultCode
+            mid: mid
+            resultMessage: resultMessage
+            rrn: rrn
+          paymentMethod:
+            cardholderName: cardholderName
+            name: name
+            expiry: expiry
+            pan: pan
+          orderReference: orderReference
+          _id: _id
+          state: state
+          updateDateTime: 2000-01-23T04:56:07.000+00:00
+          ozowPayData:
+            createdAt: 2000-01-23T04:56:07.000+00:00
+            amount:
+              currencyCode: currencyCode
+              value: 0
+            transactionReference: transactionReference
+            name: name
+            paymentStatus: paymentStatus
+            rrn: rrn
+          savedCard:
+            saveMyCardOptedByUser: true
+            maskedPan: maskedPan
+            scheme: scheme
+            cardholderName: cardholderName
+            expiry: expiry
+            cardToken: cardToken
+          originIp: originIp
+          additionalAttributes:
+            traceId: traceId
+            merchantNotificationUrl: merchantNotificationUrl
+            originalPaymentReference: originalPaymentReference
+            recurringAmount: 5
+            firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+            regularPaymentDay: 5
+            sessionId: sessionId
+            sendNotification: true
+            recurringAmountLimit: 2
+            merchantName: merchantName
+            assuranceData: assuranceData
+            frequency: frequency
+            useScheduler: true
+            originalPaymentToken: originalPaymentToken
+            merchantId: merchantId
+            numberOfInstallments: 1
+            customerId: customerId
+            lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+            echoData: echoData
+            merchantCallbackUrl: merchantCallbackUrl
+            category: 6
+      properties:
+        payment:
+          items:
+            $ref: "#/components/schemas/Payment"
+          type: array
+      type: object
+    Payment:
+      example:
+        amount:
+          currencyCode: currencyCode
+          value: 0
+        "3ds":
+          summaryText: summaryText
+          eciDescription: eciDescription
+          eci: eci
+          status: status
+        _links:
+          curies:
+          - templated: true
+            name: name
+            href: href
+          - templated: true
+            name: name
+            href: href
+          payment:apple_pay:
+            href: https://openapi-generator.tech
+          self:
+            href: https://openapi-generator.tech
+          cnp:cancel:
+            href: https://openapi-generator.tech
+          payment:card:
+            href: https://openapi-generator.tech
+          payment:samsung_pay:
+            href: https://openapi-generator.tech
+          payment:saved-card:
+            href: https://openapi-generator.tech
+          cnp:refund:
+            href: https://openapi-generator.tech
+        outletId: outletId
+        transactionID: transactionID
+        reference: reference
+        authResponse:
+          authorizationCode: authorizationCode
+          success: true
+          resultCode: resultCode
+          resultMessage: resultMessage
+          rrn: rrn
+        _embedded:
+          cnp:capture:
+          - amount:
+              currencyCode: currencyCode
+              value: 0
+            _links:
+              cnp:payment-link:
+                href: https://openapi-generator.tech
+              payment-authorization:
+                href: https://openapi-generator.tech
+              self:
+                href: https://openapi-generator.tech
+              tenant-brand:
+                href: https://openapi-generator.tech
+              payment:
+                href: https://openapi-generator.tech
+              cnp:cancel:
+                href: https://openapi-generator.tech
+              merchant-brand:
+                href: https://openapi-generator.tech
+              cnp:refund:
+                href: https://openapi-generator.tech
+            createdTime: 2000-01-23T04:56:07.000+00:00
+            state: state
+          - amount:
+              currencyCode: currencyCode
+              value: 0
+            _links:
+              cnp:payment-link:
+                href: https://openapi-generator.tech
+              payment-authorization:
+                href: https://openapi-generator.tech
+              self:
+                href: https://openapi-generator.tech
+              tenant-brand:
+                href: https://openapi-generator.tech
+              payment:
+                href: https://openapi-generator.tech
+              cnp:cancel:
+                href: https://openapi-generator.tech
+              merchant-brand:
+                href: https://openapi-generator.tech
+              cnp:refund:
+                href: https://openapi-generator.tech
+            createdTime: 2000-01-23T04:56:07.000+00:00
+            state: state
+          cnp:refund:
+          - amount:
+              currencyCode: currencyCode
+              value: 0
+            _links:
+              cnp:payment-link:
+                href: https://openapi-generator.tech
+              payment-authorization:
+                href: https://openapi-generator.tech
+              self:
+                href: https://openapi-generator.tech
+              tenant-brand:
+                href: https://openapi-generator.tech
+              payment:
+                href: https://openapi-generator.tech
+              cnp:cancel:
+                href: https://openapi-generator.tech
+              merchant-brand:
+                href: https://openapi-generator.tech
+              cnp:refund:
+                href: https://openapi-generator.tech
+            createdTime: createdTime
+            state: state
+          - amount:
+              currencyCode: currencyCode
+              value: 0
+            _links:
+              cnp:payment-link:
+                href: https://openapi-generator.tech
+              payment-authorization:
+                href: https://openapi-generator.tech
+              self:
+                href: https://openapi-generator.tech
+              tenant-brand:
+                href: https://openapi-generator.tech
+              payment:
+                href: https://openapi-generator.tech
+              cnp:cancel:
+                href: https://openapi-generator.tech
+              merchant-brand:
+                href: https://openapi-generator.tech
+              cnp:refund:
+                href: https://openapi-generator.tech
+            createdTime: createdTime
+            state: state
+        verifyResponse:
+          success: true
+          resultCode: resultCode
+          mid: mid
+          resultMessage: resultMessage
+          rrn: rrn
+        paymentMethod:
+          cardholderName: cardholderName
+          name: name
+          expiry: expiry
+          pan: pan
+        orderReference: orderReference
+        _id: _id
+        state: state
+        updateDateTime: 2000-01-23T04:56:07.000+00:00
+        ozowPayData:
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          amount:
+            currencyCode: currencyCode
+            value: 0
+          transactionReference: transactionReference
+          name: name
+          paymentStatus: paymentStatus
+          rrn: rrn
+        savedCard:
+          saveMyCardOptedByUser: true
+          maskedPan: maskedPan
+          scheme: scheme
+          cardholderName: cardholderName
+          expiry: expiry
+          cardToken: cardToken
+        originIp: originIp
+        additionalAttributes:
+          traceId: traceId
+          merchantNotificationUrl: merchantNotificationUrl
+          originalPaymentReference: originalPaymentReference
+          recurringAmount: 5
+          firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+          regularPaymentDay: 5
+          sessionId: sessionId
+          sendNotification: true
+          recurringAmountLimit: 2
+          merchantName: merchantName
+          assuranceData: assuranceData
+          frequency: frequency
+          useScheduler: true
+          originalPaymentToken: originalPaymentToken
+          merchantId: merchantId
+          numberOfInstallments: 1
+          customerId: customerId
+          lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+          echoData: echoData
+          merchantCallbackUrl: merchantCallbackUrl
+          category: 6
+      properties:
+        _id:
+          type: string
+        _links:
+          $ref: "#/components/schemas/PaymentLinks"
+        reference:
+          format: guid
+          type: string
+        paymentMethod:
+          $ref: "#/components/schemas/PaymentMethod"
+        savedCard:
+          $ref: "#/components/schemas/SavedCard"
+        state:
+          type: string
+        amount:
+          $ref: "#/components/schemas/Amount"
+        updateDateTime:
+          format: date-time
+          type: string
+        outletId:
+          format: guid
+          type: string
+        orderReference:
+          format: guid
+          type: string
+        transactionID:
+          format: guid
+          type: string
+        originIp:
+          type: string
+        authResponse:
+          $ref: "#/components/schemas/AuthResponse"
+        verifyResponse:
+          $ref: "#/components/schemas/VerifyResponse"
+        _embedded:
+          $ref: "#/components/schemas/InnerEmbedded"
+        "3ds":
+          $ref: "#/components/schemas/Info3Ds"
+        ozowPayData:
+          $ref: "#/components/schemas/OzowPayData"
+        additionalAttributes:
+          $ref: "#/components/schemas/AdditionalAttributes"
+      type: object
+    PaymentLinks:
+      example:
+        curies:
+        - templated: true
+          name: name
+          href: href
+        - templated: true
+          name: name
+          href: href
+        payment:apple_pay:
+          href: https://openapi-generator.tech
+        self:
+          href: https://openapi-generator.tech
+        cnp:cancel:
+          href: https://openapi-generator.tech
+        payment:card:
+          href: https://openapi-generator.tech
+        payment:samsung_pay:
+          href: https://openapi-generator.tech
+        payment:saved-card:
+          href: https://openapi-generator.tech
+        cnp:refund:
+          href: https://openapi-generator.tech
+      properties:
+        payment:apple_pay:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        self:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        payment:card:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        payment:samsung_pay:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        payment:saved-card:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        cnp:cancel:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        cnp:refund:
+          $ref: "#/components/schemas/CnpPaymentLink"
+        curies:
+          items:
+            $ref: "#/components/schemas/Cury"
+          type: array
+      type: object
+    Cury:
+      example:
+        templated: true
+        name: name
+        href: href
+      properties:
+        name:
+          type: string
+        href:
+          type: string
+        templated:
+          type: boolean
+      required:
+      - href
+      - name
+      - templated
+      type: object
+    PaymentMethod:
+      example:
+        cardholderName: cardholderName
+        name: name
+        expiry: expiry
+        pan: pan
+      properties:
+        expiry:
+          type: string
+        cardholderName:
+          type: string
+        name:
+          type: string
+        pan:
+          type: string
+      type: object
+    SavedCard:
+      example:
+        saveMyCardOptedByUser: true
+        maskedPan: maskedPan
+        scheme: scheme
+        cardholderName: cardholderName
+        expiry: expiry
+        cardToken: cardToken
+      properties:
+        maskedPan:
+          type: string
+        expiry:
+          type: string
+        cardholderName:
+          type: string
+        scheme:
+          type: string
+        cardToken:
+          type: string
+        saveMyCardOptedByUser:
+          type: boolean
+      type: object
+    AuthResponse:
+      example:
+        authorizationCode: authorizationCode
+        success: true
+        resultCode: resultCode
+        resultMessage: resultMessage
+        rrn: rrn
+      properties:
+        authorizationCode:
+          type: string
+        success:
+          type: boolean
+        resultCode:
+          type: string
+        resultMessage:
+          type: string
+        rrn:
+          type: string
+      required:
+      - success
+      type: object
+    VerifyResponse:
+      example:
+        success: true
+        resultCode: resultCode
+        mid: mid
+        resultMessage: resultMessage
+        rrn: rrn
+      properties:
+        success:
+          type: boolean
+        resultCode:
+          type: string
+        resultMessage:
+          type: string
+        mid:
+          type: string
+        rrn:
+          type: string
+      required:
+      - success
+      type: object
+    InnerEmbedded:
+      example:
+        cnp:capture:
+        - amount:
+            currencyCode: currencyCode
+            value: 0
+          _links:
+            cnp:payment-link:
+              href: https://openapi-generator.tech
+            payment-authorization:
+              href: https://openapi-generator.tech
+            self:
+              href: https://openapi-generator.tech
+            tenant-brand:
+              href: https://openapi-generator.tech
+            payment:
+              href: https://openapi-generator.tech
+            cnp:cancel:
+              href: https://openapi-generator.tech
+            merchant-brand:
+              href: https://openapi-generator.tech
+            cnp:refund:
+              href: https://openapi-generator.tech
+          createdTime: 2000-01-23T04:56:07.000+00:00
+          state: state
+        - amount:
+            currencyCode: currencyCode
+            value: 0
+          _links:
+            cnp:payment-link:
+              href: https://openapi-generator.tech
+            payment-authorization:
+              href: https://openapi-generator.tech
+            self:
+              href: https://openapi-generator.tech
+            tenant-brand:
+              href: https://openapi-generator.tech
+            payment:
+              href: https://openapi-generator.tech
+            cnp:cancel:
+              href: https://openapi-generator.tech
+            merchant-brand:
+              href: https://openapi-generator.tech
+            cnp:refund:
+              href: https://openapi-generator.tech
+          createdTime: 2000-01-23T04:56:07.000+00:00
+          state: state
+        cnp:refund:
+        - amount:
+            currencyCode: currencyCode
+            value: 0
+          _links:
+            cnp:payment-link:
+              href: https://openapi-generator.tech
+            payment-authorization:
+              href: https://openapi-generator.tech
+            self:
+              href: https://openapi-generator.tech
+            tenant-brand:
+              href: https://openapi-generator.tech
+            payment:
+              href: https://openapi-generator.tech
+            cnp:cancel:
+              href: https://openapi-generator.tech
+            merchant-brand:
+              href: https://openapi-generator.tech
+            cnp:refund:
+              href: https://openapi-generator.tech
+          createdTime: createdTime
+          state: state
+        - amount:
+            currencyCode: currencyCode
+            value: 0
+          _links:
+            cnp:payment-link:
+              href: https://openapi-generator.tech
+            payment-authorization:
+              href: https://openapi-generator.tech
+            self:
+              href: https://openapi-generator.tech
+            tenant-brand:
+              href: https://openapi-generator.tech
+            payment:
+              href: https://openapi-generator.tech
+            cnp:cancel:
+              href: https://openapi-generator.tech
+            merchant-brand:
+              href: https://openapi-generator.tech
+            cnp:refund:
+              href: https://openapi-generator.tech
+          createdTime: createdTime
+          state: state
+      properties:
+        cnp:refund:
+          items:
+            $ref: "#/components/schemas/EmbeddedRefund"
+          type: array
+        cnp:capture:
+          items:
+            $ref: "#/components/schemas/EmbeddedCapture"
+          type: array
+      type: object
+    EmbeddedRefund:
+      example:
+        amount:
+          currencyCode: currencyCode
+          value: 0
+        _links:
+          cnp:payment-link:
+            href: https://openapi-generator.tech
+          payment-authorization:
+            href: https://openapi-generator.tech
+          self:
+            href: https://openapi-generator.tech
+          tenant-brand:
+            href: https://openapi-generator.tech
+          payment:
+            href: https://openapi-generator.tech
+          cnp:cancel:
+            href: https://openapi-generator.tech
+          merchant-brand:
+            href: https://openapi-generator.tech
+          cnp:refund:
+            href: https://openapi-generator.tech
+        createdTime: createdTime
+        state: state
+      properties:
+        _links:
+          $ref: "#/components/schemas/Links"
+        amount:
+          $ref: "#/components/schemas/Amount"
+        createdTime:
+          type: string
+        state:
+          type: string
+      type: object
+    EmbeddedCapture:
+      example:
+        amount:
+          currencyCode: currencyCode
+          value: 0
+        _links:
+          cnp:payment-link:
+            href: https://openapi-generator.tech
+          payment-authorization:
+            href: https://openapi-generator.tech
+          self:
+            href: https://openapi-generator.tech
+          tenant-brand:
+            href: https://openapi-generator.tech
+          payment:
+            href: https://openapi-generator.tech
+          cnp:cancel:
+            href: https://openapi-generator.tech
+          merchant-brand:
+            href: https://openapi-generator.tech
+          cnp:refund:
+            href: https://openapi-generator.tech
+        createdTime: 2000-01-23T04:56:07.000+00:00
+        state: state
+      properties:
+        _links:
+          $ref: "#/components/schemas/Links"
+        amount:
+          $ref: "#/components/schemas/Amount"
+        createdTime:
+          format: date-time
+          type: string
+        state:
+          type: string
+      type: object
+    Info3Ds:
+      example:
+        summaryText: summaryText
+        eciDescription: eciDescription
+        eci: eci
+        status: status
+      properties:
+        status:
+          type: string
+        eci:
+          type: string
+        eciDescription:
+          type: string
+        summaryText:
+          type: string
+      required:
+      - eci
+      - eciDescription
+      - status
+      - summaryText
+      type: object
+    OzowPayData:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        amount:
+          currencyCode: currencyCode
+          value: 0
+        transactionReference: transactionReference
+        name: name
+        paymentStatus: paymentStatus
+        rrn: rrn
+      properties:
+        paymentStatus:
+          type: string
+        transactionReference:
+          format: guid
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        name:
+          type: string
+        amount:
+          $ref: "#/components/schemas/Amount"
+        rrn:
+          type: string
+      required:
+      - amount
+      - createdAt
+      - name
+      - paymentStatus
+      - rrn
+      - transactionReference
+      type: object
+    AdditionalAttributes:
+      allOf:
+      - $ref: "#/components/schemas/MerchantDefinedData"
+      - properties:
+          sendNotification:
+            type: boolean
+          originalPaymentToken:
+            type: string
+          originalPaymentReference:
+            type: string
+        required:
+        - sendNotification
+        type: object
+      example:
+        traceId: traceId
+        merchantNotificationUrl: merchantNotificationUrl
+        originalPaymentReference: originalPaymentReference
+        recurringAmount: 5
+        firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+        regularPaymentDay: 5
+        sessionId: sessionId
+        sendNotification: true
+        recurringAmountLimit: 2
+        merchantName: merchantName
+        assuranceData: assuranceData
+        frequency: frequency
+        useScheduler: true
+        originalPaymentToken: originalPaymentToken
+        merchantId: merchantId
+        numberOfInstallments: 1
+        customerId: customerId
+        lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+        echoData: echoData
+        merchantCallbackUrl: merchantCallbackUrl
+        category: 6
+    MerchantDefinedData:
+      example:
+        traceId: traceId
+        merchantNotificationUrl: merchantNotificationUrl
+        recurringAmount: 3
+        firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+        regularPaymentDay: 9
+        sessionId: sessionId
+        recurringAmountLimit: 2
+        merchantName: merchantName
+        assuranceData: assuranceData
+        frequency: frequency
+        useScheduler: true
+        merchantId: merchantId
+        numberOfInstallments: 7
+        customerId: customerId
+        lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+        echoData: echoData
+        merchantCallbackUrl: merchantCallbackUrl
+        category: null
+      properties:
+        echoData:
+          type: string
+        merchantCallbackUrl:
+          type: string
+        merchantId:
+          type: string
+        merchantName:
+          type: string
+        customerId:
+          type: string
+        merchantNotificationUrl:
+          type: string
+        sessionId:
+          type: string
+        traceId:
+          type: string
+        assuranceData:
+          type: string
+        category:
+          $ref: "#/components/schemas/Category"
+        frequency:
+          type: string
+        firstPaymentDate:
+          format: date-time
+          type: string
+        lastPaymentDate:
+          format: date-time
+          type: string
+        numberOfInstallments:
+          format: int32
+          type: integer
+        regularPaymentDay:
+          format: int32
+          type: integer
+        recurringAmount:
+          format: int32
+          type: integer
+        recurringAmountLimit:
+          format: int32
+          type: integer
+        useScheduler:
+          type: boolean
+      type: object
+    Category:
+      description: ""
+      enum:
+      - 1
+      - 6
+      - 11
+      type: integer
+      x-enumNames:
+      - FixedPeriodMerchant
+      - OngoingMerchant
+      - OngoingVariableMerchant
+    DeletedTokensWebHookPayload:
+      example:
+        eventId: eventId
+        savedCards:
+        - cardToken: cardToken
+          status: status
+        - cardToken: cardToken
+          status: status
+        customerId: customerId
+        eventName: eventName
+        orderReference: orderReference
+        merchantDefinedData:
+          traceId: traceId
+          merchantNotificationUrl: merchantNotificationUrl
+          recurringAmount: 3
+          firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+          regularPaymentDay: 9
+          sessionId: sessionId
+          recurringAmountLimit: 2
+          merchantName: merchantName
+          assuranceData: assuranceData
+          frequency: frequency
+          useScheduler: true
+          merchantId: merchantId
+          numberOfInstallments: 7
+          customerId: customerId
+          lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+          echoData: echoData
+          merchantCallbackUrl: merchantCallbackUrl
+          category: null
+        merchantReference: merchantReference
+      properties:
+        eventName:
+          type: string
+        eventId:
+          type: string
+        orderReference:
+          type: string
+        merchantReference:
+          type: string
+        customerId:
+          type: string
+        savedCards:
+          items:
+            $ref: "#/components/schemas/DeletedSavedCard"
+          type: array
+        merchantDefinedData:
+          $ref: "#/components/schemas/MerchantDefinedData"
+      required:
+      - eventId
+      - eventName
+      - merchantDefinedData
+      - merchantReference
+      - orderReference
+      - savedCards
+      type: object
+    DeletedSavedCard:
+      example:
+        cardToken: cardToken
+        status: status
+      properties:
+        cardToken:
+          type: string
+        status:
+          type: string
+      required:
+      - cardToken
+      - status
+      type: object
+    TokenLifeCycleWebhook:
+      example:
+        eventId: eventId
+        tokenLifecycle:
+          tokenStatus: tokenStatus
+          tokenId: tokenId
+          scheme: scheme
+          merchantId: merchantId
+        eventName: eventName
+        merchantReference: merchantReference
+      properties:
+        eventName:
+          type: string
+        eventId:
+          type: string
+        merchantReference:
+          type: string
+        tokenLifecycle:
+          $ref: "#/components/schemas/TokenLifeCycle"
+      required:
+      - eventId
+      - eventName
+      - merchantReference
+      - tokenLifecycle
+      type: object
+    TokenLifeCycle:
+      example:
+        tokenStatus: tokenStatus
+        tokenId: tokenId
+        scheme: scheme
+        merchantId: merchantId
+      properties:
+        tokenId:
+          type: string
+        merchantId:
+          type: string
+        scheme:
+          type: string
+        tokenStatus:
+          type: string
+      required:
+      - merchantId
+      - scheme
+      - tokenId
+      - tokenStatus
+      type: object
+    VodaPayGatewayDigitalWalletResponse:
+      example:
+        traceId: traceId
+        echoData: echoData
+        sessionId: sessionId
+        responseMessage: responseMessage
+        tokenRequesterId: tokenRequesterId
+        responseCode: responseCode
+      properties:
+        echoData:
+          type: string
+        responseCode:
+          type: string
+        responseMessage:
+          type: string
+        tokenRequesterId:
+          type: string
+        traceId:
+          type: string
+        sessionId:
+          type: string
+      type: object
+    VodaPayGatewayDigitalWallet:
+      example:
+        traceId: traceId
+        customerId: customerId
+        digitalWalletId: digitalWalletId
+        echoData: echoData
+      properties:
+        echoData:
+          type: string
+        traceId:
+          type: string
+        customerId:
+          type: string
+        digitalWalletId:
+          type: string
+      type: object
+    PaymentDigitalWalletResponseModel:
+      allOf:
+      - $ref: "#/components/schemas/BaseResponseModel"
+      - properties:
+          echoData:
+            type: string
+          tokenRequesterId:
+            type: string
+          retrievalReferenceNumberExtended:
+            type: string
+          sessionId:
+            type: string
+        type: object
+      example:
+        retrievalReferenceNumberExtended: retrievalReferenceNumberExtended
+        echoData: echoData
+        sessionId: sessionId
+        responseMessage: responseMessage
+        tokenRequesterId: tokenRequesterId
+        responseCode: responseCode
+    BaseResponseModel:
+      properties:
+        responseMessage:
+          type: string
+        responseCode:
+          type: string
+      type: object
+    VodaPayGatewayResponse:
+      example:
+        transmissionDateTime: 2000-01-23T04:56:07.000+00:00
+        traceId: traceId
+        initiationUrl: initiationUrl
+        echoData: echoData
+        sessionId: sessionId
+        responseMessage: responseMessage
+        transactionId: transactionId
+        responseCode: responseCode
+      properties:
+        echoData:
+          type: string
+        responseCode:
+          type: string
+        responseMessage:
+          type: string
+        transmissionDateTime:
+          format: date-time
+          type: string
+        traceId:
+          type: string
+        sessionId:
+          type: string
+        transactionId:
+          type: string
+        initiationUrl:
+          type: string
+      required:
+      - transmissionDateTime
+      type: object
+    VodaPayGatewayPayment:
+      allOf:
+      - $ref: "#/components/schemas/VodaPayGatewayBase"
+      - properties:
+          delaySettlement:
+            type: boolean
+          variableAmount:
+            type: boolean
+        required:
+        - delaySettlement
+        - variableAmount
+        type: object
+      example:
+        traceId: traceId
+        basket:
+        - quantity: 6
+          amountExVAT: 1
+          description: description
+          id: id
+          lineNumber: lineNumber
+          barcode: barcode
+          amountVAT: 5
+        - quantity: 6
+          amountExVAT: 1
+          description: description
+          id: id
+          lineNumber: lineNumber
+          barcode: barcode
+          amountVAT: 5
+        amount: 0
+        digitalWalletId: digitalWalletId
+        electronicReceipt:
+          address: address
+          method: SMS
+        delaySettlement: true
+        styling:
+          bannerUrl: bannerUrl
+          theme: LightTheme
+          logoUrl: logoUrl
+        variableAmount: true
+        customerId: customerId
+        echoData: echoData
+        additionalData: additionalData
+        communication:
+          emailAddress: emailAddress
+          msisdn: msisdn
+          message: message
+        notifications:
+          notificationUrl: notificationUrl
+          callbackUrl: callbackUrl
+    VodaPayGatewayBase:
+      properties:
+        echoData:
+          type: string
+        traceId:
+          type: string
+        amount:
+          format: int32
+          type: integer
+        additionalData:
+          type: string
+        customerId:
+          type: string
+        digitalWalletId:
+          type: string
+        notifications:
+          $ref: "#/components/schemas/Notifications"
+        styling:
+          $ref: "#/components/schemas/Styling"
+        basket:
+          items:
+            $ref: "#/components/schemas/BasketItems"
+          type: array
+        communication:
+          $ref: "#/components/schemas/Communication"
+        electronicReceipt:
+          $ref: "#/components/schemas/ElectronicReceipt"
+      required:
+      - amount
+      type: object
+    Notifications:
+      example:
+        notificationUrl: notificationUrl
+        callbackUrl: callbackUrl
+      properties:
+        callbackUrl:
+          type: string
+        notificationUrl:
+          type: string
+      type: object
+    Styling:
+      example:
+        bannerUrl: bannerUrl
+        theme: LightTheme
+        logoUrl: logoUrl
+      properties:
+        logoUrl:
+          type: string
+        bannerUrl:
+          type: string
+        theme:
+          $ref: "#/components/schemas/PaymentPageTheme"
+      required:
+      - theme
+      type: object
+    PaymentPageTheme:
+      description: ""
+      enum:
+      - LightTheme
+      - DarkTheme
+      - MiniApp
+      type: string
+      x-enumNames:
+      - LightTheme
+      - DarkTheme
+      - MiniApp
+    BasketItems:
+      example:
+        quantity: 6
+        amountExVAT: 1
+        description: description
+        id: id
+        lineNumber: lineNumber
+        barcode: barcode
+        amountVAT: 5
+      properties:
+        lineNumber:
+          type: string
+        id:
+          type: string
+        barcode:
+          type: string
+        description:
+          type: string
+        quantity:
+          format: int32
+          type: integer
+        amountExVAT:
+          format: int32
+          type: integer
+        amountVAT:
+          format: int32
+          type: integer
+      required:
+      - amountExVAT
+      - amountVAT
+      - quantity
+      type: object
+    Communication:
+      example:
+        emailAddress: emailAddress
+        msisdn: msisdn
+        message: message
+      properties:
+        msisdn:
+          type: string
+        message:
+          type: string
+        emailAddress:
+          type: string
+      type: object
+    ElectronicReceipt:
+      example:
+        address: address
+        method: SMS
+      properties:
+        method:
+          $ref: "#/components/schemas/ElectronicReceiptMethod"
+        address:
+          type: string
+      required:
+      - method
+      type: object
+    ElectronicReceiptMethod:
+      description: ""
+      enum:
+      - SMS
+      - Email
+      type: string
+      x-enumNames:
+      - SMS
+      - Email
+    VodaPayGatewayCompleteResponse:
+      example:
+        echoData: echoData
+        sessionId: sessionId
+        responseMessage: responseMessage
+        transactionId: transactionId
+        responseCode: responseCode
+      properties:
+        responseCode:
+          type: string
+        responseMessage:
+          type: string
+        echoData:
+          type: string
+        sessionId:
+          type: string
+        transactionId:
+          type: string
+      type: object
+    VodaPayGatewayPaymentComplete:
+      example:
+        action: 0
+        echoData: echoData
+        transactionId: transactionId
+      properties:
+        echoData:
+          type: string
+        transactionId:
+          type: string
+        action:
+          $ref: "#/components/schemas/CompleteActions"
+      required:
+      - action
+      type: object
+    CompleteActions:
+      description: ""
+      enum:
+      - 0
+      - 1
+      type: integer
+      x-enumNames:
+      - Settle
+      - Reversal
+    VodaPayGatewayRecurring:
+      allOf:
+      - $ref: "#/components/schemas/VodaPayGatewayBase"
+      - properties:
+          accountVerification:
+            type: boolean
+          recurring:
+            $ref: "#/components/schemas/Recurring"
+        required:
+        - accountVerification
+        type: object
+      example:
+        traceId: traceId
+        basket:
+        - quantity: 6
+          amountExVAT: 1
+          description: description
+          id: id
+          lineNumber: lineNumber
+          barcode: barcode
+          amountVAT: 5
+        - quantity: 6
+          amountExVAT: 1
+          description: description
+          id: id
+          lineNumber: lineNumber
+          barcode: barcode
+          amountVAT: 5
+        amount: 0
+        accountVerification: true
+        recurring:
+          useScheduler: true
+          amountLimit: 7
+          amount: 2
+          numberOfInstallments: 5
+          paymentInstrumentMinimumValidityPeriod: 9
+          lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+          firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+          regularPaymentDay: 5
+          category: 6
+          frequency: 1
+        digitalWalletId: digitalWalletId
+        electronicReceipt:
+          address: address
+          method: SMS
+        styling:
+          bannerUrl: bannerUrl
+          theme: LightTheme
+          logoUrl: logoUrl
+        customerId: customerId
+        echoData: echoData
+        additionalData: additionalData
+        communication:
+          emailAddress: emailAddress
+          msisdn: msisdn
+          message: message
+        notifications:
+          notificationUrl: notificationUrl
+          callbackUrl: callbackUrl
+    Recurring:
+      example:
+        useScheduler: true
+        amountLimit: 7
+        amount: 2
+        numberOfInstallments: 5
+        paymentInstrumentMinimumValidityPeriod: 9
+        lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+        firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+        regularPaymentDay: 5
+        category: 6
+        frequency: 1
+      properties:
+        category:
+          $ref: "#/components/schemas/Category"
+        frequency:
+          $ref: "#/components/schemas/FrequencyCodes"
+        firstPaymentDate:
+          format: date-time
+          type: string
+        lastPaymentDate:
+          format: date-time
+          type: string
+        numberOfInstallments:
+          format: int32
+          type: integer
+        regularPaymentDay:
+          format: int32
+          type: integer
+        amount:
+          format: int32
+          type: integer
+        amountLimit:
+          format: int32
+          type: integer
+        paymentInstrumentMinimumValidityPeriod:
+          format: int32
+          type: integer
+        useScheduler:
+          type: boolean
+      required:
+      - category
+      - frequency
+      - paymentInstrumentMinimumValidityPeriod
+      type: object
+    FrequencyCodes:
+      description: ""
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      type: integer
+      x-enumNames:
+      - AdHoc
+      - Daily
+      - BiWeekly
+      - Weekly
+      - Fortnightly
+      - Monthly
+      - Quarterly
+      - TwiceAnnually
+      - Annually
+    VodaPayGatewaySubmitRecurringResponse:
+      example:
+        transmissionDateTime: 2000-01-23T04:56:07.000+00:00
+        paymentToken: paymentToken
+        traceId: traceId
+        echoData: echoData
+        sessionId: sessionId
+        responseMessage: responseMessage
+        transactionId: transactionId
+        responseCode: responseCode
+      properties:
+        responseCode:
+          type: string
+        responseMessage:
+          type: string
+        transmissionDateTime:
+          format: date-time
+          type: string
+        paymentToken:
+          type: string
+        transactionId:
+          type: string
+        echoData:
+          type: string
+        traceId:
+          type: string
+        sessionId:
+          type: string
+      required:
+      - transmissionDateTime
+      type: object
+    VodaPayGatewayRecurringSubmit:
+      example:
+        traceId: traceId
+        paymentToken: paymentToken
+        amount: 0
+        paymentReference: paymentReference
+        customerId: customerId
+        echoData: echoData
+        additionalData: additionalData
+        electronicReceipt:
+          address: address
+          method: SMS
+        notifications:
+          notificationUrl: notificationUrl
+          callbackUrl: callbackUrl
+      properties:
+        echoData:
+          type: string
+        traceId:
+          type: string
+        paymentToken:
+          type: string
+        additionalData:
+          type: string
+        amount:
+          format: int32
+          type: integer
+        customerId:
+          type: string
+        notifications:
+          $ref: "#/components/schemas/Notifications"
+        electronicReceipt:
+          $ref: "#/components/schemas/ElectronicReceipt"
+        paymentReference:
+          type: string
+      required:
+      - amount
+      type: object
+    VodaPayGatewayRefundResponse:
+      example:
+        transmissionDateTime: 2000-01-23T04:56:07.000+00:00
+        traceId: traceId
+        amount: 0
+        echoData: echoData
+        sessionId: sessionId
+        responseMessage: responseMessage
+        transactionId: transactionId
+        responseCode: responseCode
+      properties:
+        responseCode:
+          type: string
+        responseMessage:
+          type: string
+        transmissionDateTime:
+          format: date-time
+          type: string
+        transactionId:
+          type: string
+        echoData:
+          type: string
+        traceId:
+          type: string
+        sessionId:
+          type: string
+        amount:
+          format: int32
+          type: integer
+      required:
+      - amount
+      - transmissionDateTime
+      type: object
+    VodaPayGatewayRefund:
+      example:
+        traceId: traceId
+        paymentToken: paymentToken
+        amount: 0
+        isTransactionUUID: true
+        originalTransactionId: originalTransactionId
+        echoData: echoData
+        electronicReceipt:
+          address: address
+          method: SMS
+        notifications:
+          notificationUrl: notificationUrl
+          callbackUrl: callbackUrl
+      properties:
+        echoData:
+          type: string
+        traceId:
+          type: string
+        originalTransactionId:
+          type: string
+        amount:
+          format: int32
+          type: integer
+        paymentToken:
+          type: string
+        notifications:
+          $ref: "#/components/schemas/Notifications"
+        electronicReceipt:
+          $ref: "#/components/schemas/ElectronicReceipt"
+        isTransactionUUID:
+          type: boolean
+      required:
+      - amount
+      - isTransactionUUID
+      type: object
+    VodaPayGatewayTokenResponse:
+      example:
+        transmissionDateTime: 2000-01-23T04:56:07.000+00:00
+        traceId: traceId
+        initiationUrl: initiationUrl
+        echoData: echoData
+        sessionId: sessionId
+        responseMessage: responseMessage
+        transactionId: transactionId
+        responseCode: responseCode
+      properties:
+        echoData:
+          type: string
+        responseMessage:
+          type: string
+        responseCode:
+          type: string
+        transmissionDateTime:
+          format: date-time
+          type: string
+        sessionId:
+          type: string
+        transactionId:
+          type: string
+        traceId:
+          type: string
+        initiationUrl:
+          type: string
+      required:
+      - transmissionDateTime
+      type: object
+    VodaPayGatewayCreateToken:
+      example:
+        traceId: traceId
+        paymentToken: paymentToken
+        amount: 0
+        styling:
+          bannerUrl: bannerUrl
+          theme: LightTheme
+          logoUrl: logoUrl
+        recurring:
+          useScheduler: true
+          amountLimit: 5
+          amount: 5
+          numberOfInstallments: 6
+          paymentInstrumentMinimumValidityPeriod: 2
+          lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+          firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+          regularPaymentDay: 1
+          category: FixedPeriodMerchant
+          frequency: AdHoc
+        customerId: customerId
+        digitalWalletId: digitalWalletId
+        echoData: echoData
+        notifications:
+          notificationUrl: notificationUrl
+          callbackUrl: callbackUrl
+      properties:
+        echoData:
+          type: string
+        traceId:
+          type: string
+        paymentToken:
+          type: string
+        amount:
+          format: int32
+          type: integer
+        customerId:
+          type: string
+        digitalWalletId:
+          type: string
+        recurring:
+          $ref: "#/components/schemas/Recurring2"
+        notifications:
+          $ref: "#/components/schemas/Notifications"
+        styling:
+          $ref: "#/components/schemas/Styling"
+      required:
+      - amount
+      type: object
+    Recurring2:
+      example:
+        useScheduler: true
+        amountLimit: 5
+        amount: 5
+        numberOfInstallments: 6
+        paymentInstrumentMinimumValidityPeriod: 2
+        lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+        firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+        regularPaymentDay: 1
+        category: FixedPeriodMerchant
+        frequency: AdHoc
+      properties:
+        category:
+          $ref: "#/components/schemas/Category2"
+        frequency:
+          $ref: "#/components/schemas/FrequencyCodes2"
+        firstPaymentDate:
+          format: date-time
+          type: string
+        lastPaymentDate:
+          format: date-time
+          type: string
+        numberOfInstallments:
+          format: int32
+          type: integer
+        regularPaymentDay:
+          format: int32
+          type: integer
+        amount:
+          format: int32
+          type: integer
+        amountLimit:
+          format: int32
+          type: integer
+        paymentInstrumentMinimumValidityPeriod:
+          format: int32
+          type: integer
+        useScheduler:
+          type: boolean
+      required:
+      - category
+      - frequency
+      - paymentInstrumentMinimumValidityPeriod
+      type: object
+    Category2:
+      description: ""
+      enum:
+      - FixedPeriodMerchant
+      - FixedPeriodTEP
+      - OngoingMerchant
+      - OngoingTEP
+      - OngoingVariableMerchant
+      type: string
+      x-enumNames:
+      - FixedPeriodMerchant
+      - FixedPeriodTEP
+      - OngoingMerchant
+      - OngoingTEP
+      - OngoingVariableMerchant
+    FrequencyCodes2:
+      description: ""
+      enum:
+      - AdHoc
+      - Daily
+      - BiWeekly
+      - Weekly
+      - Fortnightly
+      - Monthly
+      - Quarterly
+      - TwiceAnnually
+      - Annually
+      type: string
+      x-enumNames:
+      - AdHoc
+      - Daily
+      - BiWeekly
+      - Weekly
+      - Fortnightly
+      - Monthly
+      - Quarterly
+      - TwiceAnnually
+      - Annually
+    VodaPayGatewayAuthenticateToken:
+      example:
+        traceId: traceId
+        paymentToken: paymentToken
+        amount: 0
+        styling:
+          bannerUrl: bannerUrl
+          theme: LightTheme
+          logoUrl: logoUrl
+        recurring:
+          useScheduler: true
+          amountLimit: 5
+          amount: 5
+          numberOfInstallments: 6
+          paymentInstrumentMinimumValidityPeriod: 2
+          lastPaymentDate: 2000-01-23T04:56:07.000+00:00
+          firstPaymentDate: 2000-01-23T04:56:07.000+00:00
+          regularPaymentDay: 1
+          category: FixedPeriodMerchant
+          frequency: AdHoc
+        customerId: customerId
+        digitalWalletId: digitalWalletId
+        echoData: echoData
+        notifications:
+          notificationUrl: notificationUrl
+          callbackUrl: callbackUrl
+      properties:
+        echoData:
+          type: string
+        traceId:
+          type: string
+        paymentToken:
+          type: string
+        amount:
+          format: int32
+          type: integer
+        customerId:
+          type: string
+        digitalWalletId:
+          type: string
+        recurring:
+          $ref: "#/components/schemas/Recurring2"
+        notifications:
+          $ref: "#/components/schemas/Notifications"
+        styling:
+          $ref: "#/components/schemas/Styling"
+      required:
+      - amount
+      type: object
+    VodaPayGatewayTokenListResponse:
+      example:
+        traceId: traceId
+        paymentTokens:
+        - paymentInstrumentAssociationName: paymentInstrumentAssociationName
+          paymentInstrumentCategoryCode: paymentInstrumentCategoryCode
+          paymentInstrumentType: paymentInstrumentType
+          additionalPaymentTokenInformation: additionalPaymentTokenInformation
+          paymentInstrumentMessageSequence: paymentInstrumentMessageSequence
+          defaultPaymentInstrument: true
+          token: token
+          paymentInstrumentName: paymentInstrumentName
+          truncatedPaymentInstrument: truncatedPaymentInstrument
+          paymentInstrumentExpiryDate: paymentInstrumentExpiryDate
+          issueDate: issueDate
+          expiryDateTime: expiryDateTime
+          status: status
+        - paymentInstrumentAssociationName: paymentInstrumentAssociationName
+          paymentInstrumentCategoryCode: paymentInstrumentCategoryCode
+          paymentInstrumentType: paymentInstrumentType
+          additionalPaymentTokenInformation: additionalPaymentTokenInformation
+          paymentInstrumentMessageSequence: paymentInstrumentMessageSequence
+          defaultPaymentInstrument: true
+          token: token
+          paymentInstrumentName: paymentInstrumentName
+          truncatedPaymentInstrument: truncatedPaymentInstrument
+          paymentInstrumentExpiryDate: paymentInstrumentExpiryDate
+          issueDate: issueDate
+          expiryDateTime: expiryDateTime
+          status: status
+        echoData: echoData
+        sessionId: sessionId
+        responseMessage: responseMessage
+        tokenRequesterId: tokenRequesterId
+        responseCode: responseCode
+      properties:
+        responseMessage:
+          type: string
+        responseCode:
+          type: string
+        echoData:
+          type: string
+        tokenRequesterId:
+          type: string
+        traceId:
+          type: string
+        sessionId:
+          type: string
+        paymentTokens:
+          items:
+            $ref: "#/components/schemas/PaymentToken"
+          type: array
+      type: object
+    PaymentToken:
+      example:
+        paymentInstrumentAssociationName: paymentInstrumentAssociationName
+        paymentInstrumentCategoryCode: paymentInstrumentCategoryCode
+        paymentInstrumentType: paymentInstrumentType
+        additionalPaymentTokenInformation: additionalPaymentTokenInformation
+        paymentInstrumentMessageSequence: paymentInstrumentMessageSequence
+        defaultPaymentInstrument: true
+        token: token
+        paymentInstrumentName: paymentInstrumentName
+        truncatedPaymentInstrument: truncatedPaymentInstrument
+        paymentInstrumentExpiryDate: paymentInstrumentExpiryDate
+        issueDate: issueDate
+        expiryDateTime: expiryDateTime
+        status: status
+      properties:
+        issueDate:
+          type: string
+        token:
+          type: string
+        expiryDateTime:
+          type: string
+        status:
+          type: string
+        paymentInstrumentCategoryCode:
+          type: string
+        paymentInstrumentName:
+          type: string
+        truncatedPaymentInstrument:
+          type: string
+        paymentInstrumentAssociationName:
+          type: string
+        paymentInstrumentType:
+          type: string
+        paymentInstrumentMessageSequence:
+          type: string
+        defaultPaymentInstrument:
+          type: boolean
+        paymentInstrumentExpiryDate:
+          type: string
+        additionalPaymentTokenInformation:
+          type: string
+      required:
+      - defaultPaymentInstrument
+      type: object
+    VodaPayGatewayListToken:
+      example:
+        traceId: traceId
+        customerId: customerId
+        digitalWalletId: digitalWalletId
+        echoData: echoData
+      properties:
+        echoData:
+          type: string
+        traceId:
+          type: string
+        customerId:
+          type: string
+        digitalWalletId:
+          type: string
+      type: object
+    VodaPayGatewayToken:
+      example:
+        paymentToken: paymentToken
+        traceId: traceId
+        customerId: customerId
+        digitalWalletId: digitalWalletId
+        echoData: echoData
+        tokenControlAction: Block
+      properties:
+        echoData:
+          type: string
+        paymentToken:
+          type: string
+        traceId:
+          type: string
+        tokenControlAction:
+          $ref: "#/components/schemas/TokenControlAction"
+        customerId:
+          type: string
+        digitalWalletId:
+          type: string
+      required:
+      - tokenControlAction
+      type: object
+    TokenControlAction:
+      description: ""
+      enum:
+      - Block
+      - Unblock
+      - Cancel
+      - Remove
+      - SetDefault
+      type: string
+      x-enumNames:
+      - Block
+      - Unblock
+      - Cancel
+      - Remove
+      - SetDefault
+    PaymentPageProcessTheme:
+      description: Payment Page Process Theme
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      x-enumNames:
+      - LightTheme
+      - DarkTheme
+      - MiniApp
+    BasketItemsProcess:
+      description: Basket Items Process
+      properties:
+        lineNumber:
+          description: Gets or sets the line number.
+          type: string
+        id:
+          description: Gets or sets the identifier.
+          type: string
+        barcode:
+          description: Gets or sets the barcode.
+          type: string
+        description:
+          description: Gets or sets the description.
+          type: string
+        quantity:
+          description: Gets or sets the quantity.
+          format: int32
+          type: integer
+        amountExVAT:
+          description: Gets or sets the amount ex vat.
+          format: int32
+          type: integer
+        amountVAT:
+          description: Gets or sets the amount vat.
+          format: int32
+          type: integer
+      required:
+      - amountExVAT
+      - amountVAT
+      - quantity
+      type: object
+    PayProcess_OnceOff_request:
+      properties:
+        ApiKey:
+          description: Gets or sets the API key.
+          nullable: true
+          type: string
+        DelaySettlement:
+          description: "Gets or sets a value indicating whether [delay settlement]."
+          nullable: false
+          type: boolean
+        IsTesting:
+          description: Gets or sets a value indicating whether this instance is testing.
+          nullable: false
+          type: boolean
+        EchoData:
+          description: Gets or sets the echo data.
+          nullable: true
+          type: string
+        TraceId:
+          description: Gets or sets the trace identifier.
+          nullable: true
+          type: string
+        Amount:
+          description: Gets or sets the amount.
+          format: int32
+          nullable: false
+          type: integer
+        AdditionalData:
+          description: Gets or sets the additional data.
+          nullable: true
+          type: string
+        CustomerId:
+          description: Gets or sets the customer identifier.
+          nullable: true
+          type: string
+        DigitalWalletId:
+          description: Gets or sets the digital wallet identifier.
+          nullable: true
+          type: string
+        CallbackUrl:
+          description: Gets or sets the callback URL.
+          nullable: true
+          type: string
+        NotificationUrl:
+          description: Gets or sets the notification URL.
+          nullable: true
+          type: string
+        LogoUrl:
+          description: Gets or sets the logo URL.
+          nullable: true
+          type: string
+        BannerUrl:
+          description: Gets or sets the banner URL.
+          nullable: true
+          type: string
+        Theme:
+          description: Gets or sets the theme.
+          enum:
+          - "0"
+          - "1"
+          - "2"
+          format: int32
+          nullable: false
+          type: integer
+          x-schema:
+            $ref: "#/definitions/PaymentPageProcessTheme"
+        Basket:
+          description: Gets or sets the basket.
+          items:
+            $ref: "#/components/schemas/BasketItemsProcess"
+          nullable: true
+          type: array
+        Msisdn:
+          description: Gets or sets the msisdn.
+          nullable: true
+          type: string
+        Message:
+          description: Gets or sets the message.
+          nullable: true
+          type: string
+      type: object
+x-generator: NSwag v14.0.8.0 (NJsonSchema v11.0.1.0 (Newtonsoft.Json v13.0.0.0))
+x-original-swagger-version: "2.0"
