@@ -26,27 +26,48 @@ class ExpressServer {
   }
 
   setupMiddleware() {
+    // -----------------------------
     // Core middleware
+    // -----------------------------
     this.app.use(cors());
     this.app.use(bodyParser.json({ limit: '14MB' }));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(cookieParser());
 
+    // -----------------------------
+    // ROOT ROUTE (fixes "Cannot GET /")
+    // -----------------------------
+    this.app.get('/', (req, res) => {
+      res.status(200).json({
+        status: 'VodaPay Gateway API is running',
+        docs: '/api-docs',
+        health: '/hello'
+      });
+    });
+
+    // -----------------------------
     // Health check
+    // -----------------------------
     this.app.get('/hello', (req, res) => {
       res.send(`Server is running. OpenAPI path: ${this.openApiPath}`);
     });
 
-    // Serve OpenAPI file
+    // -----------------------------
+    // OpenAPI file (raw)
+    // -----------------------------
     this.app.get('/openapi', (req, res) => {
       res.sendFile(path.join(__dirname, 'api', 'openapi.yaml'));
     });
 
-    // Swagger UI (still safe to use schema here)
+    // -----------------------------
+    // Swagger UI (safe for viewing only)
+    // -----------------------------
     this.app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(this.schema));
 
-    // OAuth placeholders (kept for compatibility)
+    // -----------------------------
+    // OAuth placeholders (safe ignore)
+    // -----------------------------
     this.app.get('/login-redirect', (req, res) => {
       res.status(200).json(req.query);
     });
@@ -55,35 +76,26 @@ class ExpressServer {
       res.status(200).json(req.query);
     });
 
-    /**
-     * 🚨 IMPORTANT FIX:
-     * We completely REMOVE express-openapi-validator
-     * because it is causing:
-     * "Token 'definitions' does not exist"
-     *
-     * Instead we do a lightweight passthrough so controllers still work.
-     */
+    // -----------------------------
+    // 🚨 IMPORTANT FIX
+    // -----------------------------
+    // We removed express-openapi-validator completely
+    // because it caused:
+    // "Token 'definitions' does not exist"
+    //
+    // Instead we just pass through requests.
     this.app.use((req, res, next) => {
-      // Provide minimal compatibility object expected by generated controllers
       req.openapi = {};
-      next();
-    });
-
-    /**
-     * Route loader for generated controllers
-     * (this is what actually handles /v2/Pay/OnceOff etc)
-     */
-    this.app.use((req, res, next) => {
       next();
     });
   }
 
   launch() {
-    // Error handler
+    // Global error handler
     this.app.use((err, req, res, next) => {
       res.status(err.status || 500).json({
         message: err.message || err,
-        errors: err.errors || '',
+        errors: err.errors || ''
       });
     });
 
