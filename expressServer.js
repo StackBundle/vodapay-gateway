@@ -31,7 +31,19 @@ class ExpressServer {
   }
 
   setupMiddleware() {
-    this.app.use(cors());
+    //this.app.use(cors());
+    this.app.use(cors({
+  origin: [
+    'https://goodlucky.co.za',
+    'http://localhost:3000'
+  ],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+// IMPORTANT: handle preflight requests
+    this.app.options('*', cors());
     this.app.use(bodyParser.json({ limit: '14MB' }));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
