@@ -10,6 +10,11 @@ const bodyParser = require('body-parser');
 
 const logger = require('./logger');
 
+// -----------------------------
+// ✅ IMPORT ECWID WEBHOOK ROUTE
+// -----------------------------
+const ecwidWebhook = require('./ecwid/ecwidWebhook');
+
 class ExpressServer {
   constructor(port, openApiYaml) {
     this.port = port;
@@ -36,7 +41,7 @@ class ExpressServer {
     this.app.use(cookieParser());
 
     // -----------------------------
-    // ROOT ROUTE (fixes "Cannot GET /")
+    // ROOT ROUTE
     // -----------------------------
     this.app.get('/', (req, res) => {
       res.status(200).json({
@@ -54,19 +59,19 @@ class ExpressServer {
     });
 
     // -----------------------------
-    // OpenAPI file (raw)
+    // OpenAPI file
     // -----------------------------
     this.app.get('/openapi', (req, res) => {
       res.sendFile(path.join(__dirname, 'api', 'openapi.yaml'));
     });
 
     // -----------------------------
-    // Swagger UI (safe for viewing only)
+    // Swagger UI
     // -----------------------------
     this.app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(this.schema));
 
     // -----------------------------
-    // OAuth placeholders (safe ignore)
+    // OAuth placeholders
     // -----------------------------
     this.app.get('/login-redirect', (req, res) => {
       res.status(200).json(req.query);
@@ -77,13 +82,13 @@ class ExpressServer {
     });
 
     // -----------------------------
-    // 🚨 IMPORTANT FIX
+    // 🚨 ECWID WEBHOOK ROUTE (ADDED)
     // -----------------------------
-    // We removed express-openapi-validator completely
-    // because it caused:
-    // "Token 'definitions' does not exist"
-    //
-    // Instead we just pass through requests.
+    this.app.use('/webhooks', ecwidWebhook);
+
+    // -----------------------------
+    // Pass-through middleware
+    // -----------------------------
     this.app.use((req, res, next) => {
       req.openapi = {};
       next();
