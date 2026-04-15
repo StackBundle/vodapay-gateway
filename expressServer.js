@@ -10,16 +10,15 @@ const bodyParser = require('body-parser');
 
 const logger = require('./logger');
 
-// -----------------------------
-// ✅ IMPORT ECWID WEBHOOK ROUTE
-// -----------------------------
-//const ecwidWebhook = require('./ecwid/ecwidWebhook');
+// 👉 IMPORT YOUR PAYMENT SERVICE (IMPORTANT)
+const PayProcessService = require('./services/PayProcessService');
 
 class ExpressServer {
   constructor(port, openApiYaml) {
     this.port = port;
     this.app = express();
     this.openApiPath = openApiYaml;
+    this.server = null;
 
     try {
       this.schema = jsYaml.load(fs.readFileSync(openApiYaml, 'utf8'));
@@ -28,21 +27,25 @@ class ExpressServer {
     }
 
     this.setupMiddleware();
+    this.setupRoutes(); // 👈 ADD ROUTES HERE
   }
 
   setupMiddleware() {
-    // -----------------------------
-    // Core middleware
-    // -----------------------------
     this.app.use(cors());
     this.app.use(bodyParser.json({ limit: '14MB' }));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(cookieParser());
 
-    // -----------------------------
-    // ROOT ROUTE
-    // -----------------------------
+    this.app.use((req, res, next) => {
+      req.openapi = {};
+      next();
+    });
+  }
+
+  setupRoutes() {
+
+    // ROOT
     this.app.get('/', (req, res) => {
       res.status(200).json({
         status: 'VodaPay Gateway API is running',
@@ -51,28 +54,20 @@ class ExpressServer {
       });
     });
 
-    // -----------------------------
-    // Health check
-    // -----------------------------
+    // HEALTH
     this.app.get('/hello', (req, res) => {
       res.send(`Server is running. OpenAPI path: ${this.openApiPath}`);
     });
 
-    // -----------------------------
-    // OpenAPI file
-    // -----------------------------
+    // OPENAPI
     this.app.get('/openapi', (req, res) => {
       res.sendFile(path.join(__dirname, 'api', 'openapi.yaml'));
     });
 
-    // -----------------------------
-    // Swagger UI
-    // -----------------------------
+    // SWAGGER
     this.app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(this.schema));
 
-    // -----------------------------
-    // OAuth placeholders
-    // -----------------------------
+    // OAUTH
     this.app.get('/login-redirect', (req, res) => {
       res.status(200).json(req.query);
     });
@@ -81,36 +76,46 @@ class ExpressServer {
       res.status(200).json(req.query);
     });
 
-    // -----------------------------
-    // 🚨 ECWID WEBHOOK ROUTE (ADDED)
-    // -----------------------------
-    //this.app.use('/webhooks', ecwidWebhook);
+    // ======================================================
+    // ✅ PAYMENT ENDPOINT (THIS FIXES YOUR 404 ERROR)
+    // ======================================================
+    this.app.post('/create-payment', async (req, res) => {
+      try {
+        const { orderId } = req.body;
 
-    // -----------------------------
-    // Pass-through middleware
-    // -----------------------------
-    this.app.use((req, res, next) => {
-      req.openapi = {};
-      next();
+        if (!orderId) {
+          return res.status(400).json({
+            error: 'orderId is required'
+          });
+        }
+
+        const service = new PayProcessService();
+
+        const result = await service.createPayment(orderId);
+
+        return res.json(result);
+
+      } catch (err) {
+        logger.error('create-payment error', err);
+        return res.status(500).json({
+          error: 'Payment creation failed',
+          details: err.message
+        });
+      }
     });
+
   }
 
   launch() {
-    // Global error handler
-    this.app.use((err, req, res, next) => {
-      res.status(err.status || 500).json({
-        message: err.message || err,
-        errors: err.errors || ''
-      });
-    });
+    this.server = http.createServer(this.app);
 
-    http.createServer(this.app).listen(this.port, () => {
+    this.server.listen(this.port, () => {
       console.log(`🚀 Server running on port ${this.port}`);
     });
   }
 
   async close() {
-    if (this.server !== undefined) {
+    if (this.server) {
       await this.server.close();
       console.log(`Server on port ${this.port} shut down`);
     }
