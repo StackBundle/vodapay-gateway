@@ -13,7 +13,7 @@ const logger = require('./logger');
 // -----------------------------
 // ✅ IMPORT ECWID WEBHOOK ROUTE
 // -----------------------------
-const ecwidWebhook = require('./ecwid/ecwidWebhook');
+//const ecwidWebhook = require('./ecwid/ecwidWebhook');
 
 class ExpressServer {
   constructor(port, openApiYaml) {
@@ -84,7 +84,7 @@ class ExpressServer {
     // -----------------------------
     // 🚨 ECWID WEBHOOK ROUTE (ADDED)
     // -----------------------------
-    this.app.use('/webhooks', ecwidWebhook);
+    //this.app.use('/webhooks', ecwidWebhook);
 
     // -----------------------------
     // Pass-through middleware
